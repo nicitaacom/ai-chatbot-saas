@@ -1,14 +1,12 @@
-# What inside? <br/> <sub> no production url - pusher 'Connection closed' error</sub>
+# What inside? <br/> <sub> no production url</sub>
 
-![minimal-reproduce-example](https://i.imgur.com/AxIPz7y.jpg)
+![support-chat](https://i.imgur.com/GEzOP4s.png)
 
 <br/>
 <br/>
 <br/>
 
-
-https://github.com/nicitaacom/acc2-pusher_active_status/assets/39565703/61ccb3f0-5511-496f-98c6-4bc071dbf379
-
+https://github.com/nicitaacom/ai-chatbot-saas
 
 # Clone repository
 
@@ -19,7 +17,7 @@ https://github.com/nicitaacom/acc2-pusher_active_status/assets/39565703/61ccb3f0
 ## or Step 1.1 - clone repository (variant 2)
 
 ```
-git clone https://github.com/nicitaacom/acc2-pusher_active_status
+git clone https://github.com/nicitaacom/ai-chatbot-saas
 ```
 
 ## Step 1.2 - install deps
@@ -40,4 +38,4 @@ pnpm dev
 
 ## Step 2 - setup .env
 
-env already set up for you
+it's no envs in this project yet
