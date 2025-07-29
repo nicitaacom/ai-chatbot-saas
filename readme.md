@@ -8,6 +8,10 @@
 
 https://github.com/nicitaacom/ai-chatbot-saas
 
+## Note
+
+Use `next:14.0.4` in order to build all this stuff with `next-international`
+
 # Clone repository
 
 ## Step 1.1 - clone repository (variant 1)

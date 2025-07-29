@@ -1,4 +1,4 @@
-import { IMessageDB } from "@/interfaces/IMessageDB"
+import { IMessageDB } from "@/TS/interfaces/IMessageDB"
 import { create } from "zustand"
 
 interface MessagesStore {

@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "@/globals.css"
-import { Suspense } from "react"
-import EmbedClient from "./EmbedClient"
+import { Navbar } from "@/components/Navbar"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -11,13 +10,16 @@ export const metadata: Metadata = {
   description: "AI chatbot trained on CX",
 }
 
-export default function EmbedPage() {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Suspense>
-          <EmbedClient />
-        </Suspense>
+        <Navbar />
+        {children}
       </body>
     </html>
   )

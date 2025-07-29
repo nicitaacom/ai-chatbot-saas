@@ -2,9 +2,10 @@
 import { NextResponse } from "next/server"
 
 export async function POST(req: Request) {
-  const { userId, widgetId } = await req.json()
+  const { widgetId } = await req.json()
+  // const { userId, widgetId } = await req.json()
 
-  // fetch smth by userId
+  // TODO fetch smth by userId
 
   return NextResponse.json({
     openAIKey: `API key from ${widgetId}`,

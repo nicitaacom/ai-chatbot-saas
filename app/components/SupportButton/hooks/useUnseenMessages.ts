@@ -1,7 +1,7 @@
 import { create } from "zustand"
 
 import getOrSetAnonymousIdFromLS from "@/utils/getAnonymousId"
-import { IMessageDB } from "@/interfaces/IMessageDB"
+import { IMessageDB } from "@/TS/interfaces/IMessageDB"
 
 type UnseenMessagesStore = {
   unseenMessagesNumber: number

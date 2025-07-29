@@ -1,3 +1,37 @@
 {
-  "extends": "next/core-web-vitals"
+  "root": true,
+  "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "project": "./tsconfig.json",
+    "extraFileExtensions": [".ts.deprecated"]
+  },
+  "overrides": [
+    {
+      "files": ["**/store/**", "**/zustand/**", "**/stores/**", "**/*.store.ts", "**/use*.ts"],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": [
+          "warn",
+          {
+            "argsIgnorePattern": "^_?$|^(set|get)$"
+          }
+        ]
+      }
+    }
+  ],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "react-hooks/exhaustive-deps": "warn",
+    "no-console": "off"
+  }
 }

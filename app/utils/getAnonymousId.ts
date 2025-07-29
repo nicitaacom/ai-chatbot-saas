@@ -6,7 +6,7 @@ import { nanoid } from "nanoid"
  * anonymousId from cookies (in case user not authenticated)
  */
 const getOrSetAnonymousIdFromLS = (): string => {
-  let storedId = localStorage.getItem("anonymousId")
+  const storedId = localStorage.getItem("anonymousId")
 
   let newAnonymousId = ""
   const anonymousId = storedId

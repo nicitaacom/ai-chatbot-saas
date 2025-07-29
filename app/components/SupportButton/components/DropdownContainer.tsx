@@ -1,7 +1,6 @@
 "use client"
 
 import { BiSupport } from "react-icons/bi"
-import { AiOutlineClose } from "react-icons/ai"
 import { twMerge } from "tailwind-merge"
 
 interface DropdownContainerProps {
@@ -24,7 +23,7 @@ export function DropdownContainer({
   classNameIsDropdownTrue,
   classNameIsDropdownFalse,
   isDropdown,
-  onClick,
+
   dropdownRef,
 }: DropdownContainerProps) {
   return (
@@ -51,7 +50,7 @@ export function DropdownContainer({
                 {username ? (
                   <p className="text-white/80 text-xs">Hi {username}! 👋</p>
                 ) : (
-                  <p className="text-white/80 text-xs">We're here to help</p>
+                  <p className="text-white/80 text-xs">We&apos;re here to help</p>
                 )}
               </div>
             </div>

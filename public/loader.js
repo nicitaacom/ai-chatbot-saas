@@ -1,6 +1,8 @@
 ;(function () {
   const s = document.currentScript
   const widgetId = s.getAttribute("data-widget-id")
+  // language will be fetched from widgetId (row in supabase widgetId will contain that info)
+  // const languageTag = s.getAttribute("data-language-tag")
 
   let isOpen = false
   let iframe = null
@@ -34,9 +36,10 @@
 
   // 2. Create iframe element (but don't append yet)
   function createIframe() {
+    const url = process.env.NODE_ENV === "production" ? process.env.NEXT_PUBLIC_PRODUCTION_URL : "http://localhost:3000"
     iframe = document.createElement("iframe")
     iframe.id = "chat-iframe"
-    iframe.src = `http://localhost:3000/embed?widgetId=${widgetId}`
+    iframe.src = `${url}/embed?widgetId=${widgetId}`
     iframe.style = `
       all: unset;
       position: fixed;
