@@ -36,7 +36,7 @@
 
   // 2. Create iframe element (but don't append yet)
   function createIframe() {
-    const url = process.env.NODE_ENV === "production" ? process.env.NEXT_PUBLIC_PRODUCTION_URL : "http://localhost:3000"
+    const url = "http://localhost:3000"
     iframe = document.createElement("iframe")
     iframe.id = "chat-iframe"
     iframe.src = `${url}/embed?widgetId=${widgetId}`
