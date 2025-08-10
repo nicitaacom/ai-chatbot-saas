@@ -44,7 +44,7 @@ function PricingCard({ plan, price, yearlyPrice, period, features, isPopular, bu
             ? "bg-brand hover:bg-brand/90 text-title-foreground"
             : "bg-foreground/40 hover:bg-foreground/60 border border-border-color/30 text-title"
         }`}>
-        {buttonText}
+        {t(buttonText)}
       </button>
       <div className="space-y-4">
         <div className="text-title font-semibold mb-4">{t("plan.features")}</div>
@@ -73,7 +73,7 @@ export default function Home() {
       yearlyPrice: "$0",
       period: "month",
       features: ["plan.feature.reports.10", "plan.feature.support.chat", "plan.feature.selling.local.3", "plan.feature.pos.lite"],
-      buttonText: "Current plan", // TODO - make it depending on current plan
+      buttonText: "plan.free.buttonText", // TODO - (current plan) make it depending on current plan
       isPopular: false,
     },
     {
@@ -89,7 +89,7 @@ export default function Home() {
         "plan.feature.staff.15",
         "plan.feature.checkout.10x",
       ],
-      buttonText: "Get Advanced",
+      buttonText: "plan.basic.buttonText",
       isPopular: true,
     },
     {
@@ -105,7 +105,7 @@ export default function Home() {
         "plan.feature.staff.unlimited",
         "plan.feature.checkout.40x",
       ],
-      buttonText: "Get Plus",
+      buttonText: "plan.pro.buttonText",
       isPopular: false,
     },
   ]

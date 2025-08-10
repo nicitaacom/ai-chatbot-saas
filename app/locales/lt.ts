@@ -61,13 +61,17 @@ export default {
   // Pricing page specific
   "plan.title": "Izvēlieties savu plānu",
   "plan.subscription": "Abonements",
-  "plan.onetime": "Vienreizējs",
-  "plan.discount": "Ietaupi 20%",
+  "plan.monthly": "Kas mėnesį",
+  "plan.onetime": "Vienkartinis",
   "plan.features": "Kas iekļauts",
   // Plan descriptions
   "plan.free.subtitle": "Ideāls mazām komandām",
   "plan.basic.subtitle": "Labākais augošiem uzņēmumiem",
   "plan.pro.subtitle": "Uzņēmuma klases risinājums",
+  // buttonText
+  "plan.free.buttonText": "Gauti nemokamai",
+  "plan.basic.buttonText": "Gauti bazinį",
+  "plan.pro.buttonText": "Gauti profesionalų",
   // Feature translations
   "plan.feature.reports.10": "Līdz 10 pielāgotiem pārskatiem",
   "plan.feature.reports.custom": "Neierobežoti pielāgoti pārskati",

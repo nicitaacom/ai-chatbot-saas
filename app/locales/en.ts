@@ -62,11 +62,16 @@ export default {
   "plan.title": "Choose Your Plan",
   "plan.subscription": "Subscription",
   "plan.monthly": "Monthly",
+  "plan.onetime": "One time",
   "plan.features": "What's included",
   // Plan descriptions
   "plan.free.subtitle": "Perfect for small teams",
   "plan.basic.subtitle": "Best for growing businesses",
   "plan.pro.subtitle": "Enterprise-grade solution",
+  // buttonText
+  "plan.free.buttonText": "Get free",
+  "plan.basic.buttonText": "Get basic",
+  "plan.pro.buttonText": "Get pro",
   // Feature translations
   "plan.feature.reports.10": "Up to 10 custom reports",
   "plan.feature.reports.custom": "Unlimited custom reports",
