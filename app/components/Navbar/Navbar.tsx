@@ -5,42 +5,28 @@ import { useChangeLocale, useCurrentLocale } from "@/locales/client"
 import { FaCheck, FaGlobe } from "react-icons/fa"
 import { IoMdArrowDropdown } from "react-icons/io"
 import { motion } from "framer-motion"
-import useThemeStore, { TTheme } from "@/stores/useThemeStore"
+import useThemeStore from "@/stores/useThemeStore"
 import { TLocaleTag } from "@/TS/types/TLocale"
 import useOnEscOrClickOutside from "@/hooks/useOnEscOrClickOutside"
+import { ThemeChanger } from "./ThemeChanger"
 
 const locales = [
   { code: "en" as TLocaleTag, name: "English", flag: "🇺🇸" },
   { code: "lt" as TLocaleTag, name: "Latvian", flag: "🇱🇻" },
 ]
 
-const colors: Array<{ name: TTheme; bg: string }> = [
-  { name: "dark", bg: "bg-gray-800" },
-  { name: "red", bg: "bg-red-500" },
-  { name: "orange", bg: "bg-orange-500" },
-  { name: "yellow", bg: "bg-yellow-500" },
-  { name: "green", bg: "bg-green-500" },
-  { name: "turquoise", bg: "bg-teal-500" },
-  { name: "blue", bg: "bg-blue-500" },
-  { name: "purple", bg: "bg-purple-500" },
-]
-
 export const Navbar = () => {
   const [langOpen, setLangOpen] = useState(false)
-  const [themeOpen, setThemeOpen] = useState(false)
   const langRef = useRef<HTMLDivElement>(null)
-  const themeRef = useRef<HTMLDivElement>(null)
 
   const changeLocale = useChangeLocale()
   const locale = useCurrentLocale()
   const currentLocale = locales.find(l => l.code === locale)
 
   const { theme, setTheme } = useThemeStore()
-  const currentTheme = colors.find(c => c.name === theme)
 
   // close dropdowns on ESC or outside click
   useOnEscOrClickOutside(langRef, () => setLangOpen(false), langOpen)
-  useOnEscOrClickOutside(themeRef, () => setThemeOpen(false), themeOpen)
 
   useEffect(() => {
     if (!theme) setTheme("dark")
@@ -49,10 +35,6 @@ export const Navbar = () => {
   const handleLocaleChange = (code: TLocaleTag) => {
     changeLocale(code)
     setLangOpen(false)
-  }
-  const handleThemeChange = (t: TTheme) => {
-    setTheme(t)
-    setThemeOpen(false)
   }
 
   return (
@@ -68,42 +50,7 @@ export const Navbar = () => {
 
         <div className="flex items-center space-x-4">
           {/* Theme Dropdown */}
-          <div className="relative" ref={themeRef}>
-            <motion.button
-              onClick={() => setThemeOpen(o => !o)}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50/60 hover:bg-gray-100/60 dark:bg-gray-800/50 dark:hover:bg-gray-700/60 transition-colors border border-gray-200/30">
-              <div className={`w-3 h-3 rounded-full ${currentTheme?.bg}`} />
-              <span className="text-sm text-gray-700 dark:text-gray-200">{currentTheme?.name}</span>
-              <IoMdArrowDropdown
-                className={`w-4 h-4 text-gray-400 transition-transform ${themeOpen ? "rotate-180" : ""}`}
-              />
-            </motion.button>
-
-            <motion.div
-              initial={false}
-              animate={{
-                opacity: themeOpen ? 1 : 0,
-                y: themeOpen ? 0 : -10,
-                visibility: themeOpen ? "visible" : "hidden",
-              }}
-              transition={{ duration: 0.25 }}
-              className="absolute right-0 mt-2 w-40 bg-white dark:bg-neutral-900 border border-gray-200/30 rounded-xl shadow-md z-50 py-1">
-              {colors.map(c => (
-                <motion.button
-                  key={c.name}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleThemeChange(c.name)}
-                  className="flex items-center justify-between w-full px-4 py-2 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-100/60 dark:hover:bg-gray-700/50 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-3 h-3 rounded-full ${c.bg}`} />
-                    <span>{c.name}</span>
-                  </div>
-                  {theme === c.name && <FaCheck className="text-green-500 w-4 h-4" />}
-                </motion.button>
-              ))}
-            </motion.div>
-          </div>
+          <ThemeChanger />
 
           {/* Language Dropdown */}
           <div className="relative" ref={langRef}>
@@ -115,9 +62,7 @@ export const Navbar = () => {
               <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                 {currentLocale?.flag} {currentLocale?.name}
               </span>
-              <IoMdArrowDropdown
-                className={`w-4 h-4 text-gray-400 transition-transform ${langOpen ? "rotate-180" : ""}`}
-              />
+              <IoMdArrowDropdown className={`w-4 h-4 text-gray-400 transition-transform ${langOpen ? "rotate-180" : ""}`} />
             </motion.button>
 
             <motion.div

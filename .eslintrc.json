@@ -20,6 +20,19 @@
           }
         ]
       }
+    },
+    {
+      "files": ["**/*.{ts,tsx}"],
+      "rules": {
+        "react-hooks/exhaustive-deps": "off",
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": "CallExpression[callee.name='useEffect'] > ArrayExpression:empty",
+            "message": "Empty dependency arrays are allowed — no need for exhaustive-deps here."
+          }
+        ]
+      }
     }
   ],
   "rules": {
@@ -31,7 +44,6 @@
         "argsIgnorePattern": "^_"
       }
     ],
-    "react-hooks/exhaustive-deps": "warn",
     "no-console": "off"
   }
 }

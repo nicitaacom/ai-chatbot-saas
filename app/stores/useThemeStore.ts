@@ -1,8 +1,6 @@
+import { TPaddings, TTheme } from "@/TS/types/TThemeAndPaddings"
 import { create } from "zustand"
 import { persist, subscribeWithSelector } from "zustand/middleware"
-
-export type TTheme = "dark" | "red" | "orange" | "yellow" | "green" | "turquoise" | "blue" | "purple"
-export type TPaddings = "Default" | "Compact" | "Minimalist"
 
 interface ThemeStore {
   paddings: TPaddings

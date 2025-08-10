@@ -11,7 +11,7 @@
 #   "endOfLine": "crlf"
 # }
 
-printWidth: 120 #https://i.imgur.com/4R3sG7H.png
+printWidth: 130 #https://i.imgur.com/4R3sG7H.png
 semi: false #https://i.imgur.com/cIQYB4m.png
 tabWidth: 2 #https://i.imgur.com/JNZQMad.png
 singleQuote: false #https://i.imgur.com/KCRIRIQ.png
