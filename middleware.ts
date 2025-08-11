@@ -14,5 +14,5 @@ export function middleware(request: NextRequest) {
 
 // exclude: api, static, _next, files, embed
 export const config = {
-  matcher: ["/((?!api|static|.*\\..*|_next|favicon.ico|robots.txt|embed).*)"],
+  matcher: ["/((?!api|static|.*\\..*|_next|favicon.ico|robots.txt|embed|auth/callback).*)"],
 }

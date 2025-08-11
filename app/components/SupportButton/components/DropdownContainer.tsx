@@ -38,7 +38,7 @@ export function DropdownContainer({
             : `opacity-0 invisible translate-y-2 scale-95 transition-all duration-200 ease-in ${classNameIsDropdownFalse}`,
           className,
         )}>
-        <div className="bg-background border-[1px] border-solid border-border-color rounded-xl shadow-2xl overflow-hidden">
+        <div className="bg-background border-[1px] border-solid border-border-color rounded-lg shadow-2xl overflow-hidden">
           {/* Header */}
           <div className="bg-brand p-4 flex items-center justify-between">
             <div className="flex items-center space-x-3">

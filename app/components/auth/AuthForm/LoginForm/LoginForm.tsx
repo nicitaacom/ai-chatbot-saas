@@ -1,45 +1,76 @@
 import { useI18n } from "@/locales/client"
+import { useState } from "react"
+import { Input, Button } from "antd"
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"
+import useAuth from "@/stores/useAuth"
 
 export function LoginForm() {
   const t = useI18n()
+  const { setAuthMode } = useAuth()
+  const [isLoading, setIsLoading] = useState(false)
+
+  // 1. handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    // Simulate API call
+    setTimeout(() => setIsLoading(false), 2000)
+  }
 
   return (
-    <form className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Email Input */}
       <div>
-        <input
+        <Input
           type="email"
           placeholder={t("auth.email.placeholder")}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
+          size="large"
+          className="!bg-background !border-border-color/30 !text-title placeholder:!text-subTitle
+           !rounded-lg hover:!border-brand/60 focus:!border-brand !shadow-none transition-all duration-200"
         />
       </div>
 
+      {/* Password Input */}
       <div>
-        <input
-          type="password"
+        <Input.Password
           placeholder={t("auth.password.placeholder")}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
+          size="large"
+          iconRender={visible =>
+            visible ? <AiOutlineEye className="text-subTitle" /> : <AiOutlineEyeInvisible className="text-subTitle" />
+          }
+          className="!bg-background !border-border-color/30 !text-title
+          [&_.ant-input::placeholder]:!text-subTitle !rounded-lg hover:!border-brand/60 focus:!border-brand !shadow-none transition-all duration-200"
         />
       </div>
 
-      <div className="flex items-center justify-between">
-        <label className="flex items-center">
-          <input type="checkbox" className="w-4 h-4 text-brand border-gray-300 rounded focus:ring-brand" />
-          <span className="ml-2 text-sm text-gray-600">{t("auth.remember.me")}</span>
-        </label>
-        <button type="button" className="text-sm text-brand hover:underline">
+      {/* Remember & Forgot */}
+      <div className="flex items-center justify-end">
+        <button
+          type="button"
+          onClick={() => setAuthMode("recovery")}
+          className="text-sm text-brand hover:text-brand/80 transition-colors duration-200 font-medium">
           {t("auth.forgot.password")}
         </button>
       </div>
 
-      <button
-        type="submit"
-        className="w-full bg-brand text-white py-3 rounded-xl hover:opacity-90 transition-opacity font-medium">
+      {/* Submit Button */}
+      <Button
+        type="primary"
+        htmlType="submit"
+        size="large"
+        loading={isLoading}
+        className="!w-full !bg-brand hover:!bg-brand/90 !border-brand [&>span]:!text-black
+         !rounded-lg !font-medium !h-12 active:scale-[0.98] transition-transform duration-150">
         {t("auth.login.button")}
-      </button>
+      </Button>
 
-      <div className="text-center">
-        <span className="text-gray-600">{t("auth.no.account")} </span>
-        <button type="button" className="text-brand hover:underline font-medium">
+      {/* Sign Up Link */}
+      <div className="text-center space-x-1">
+        <span className="text-subTitle">{t("auth.no.account")}</span>
+        <button
+          type="button"
+          onClick={() => setAuthMode("register")}
+          className="text-brand hover:text-brand/80 transition-colors duration-200 font-medium">
           {t("auth.sign.up")}
         </button>
       </div>

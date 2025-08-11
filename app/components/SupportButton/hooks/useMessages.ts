@@ -1,4 +1,4 @@
-import { IMessageDB } from "@/TS/interfaces/IMessageDB"
+import { IMessageDB } from "@/ts/interfaces/IMessageDB"
 import { create } from "zustand"
 
 interface MessagesStore {
@@ -19,8 +19,7 @@ export const useMessagesStore = create<MessagesStore>((set, get) => ({
     set(() => ({ isChatFilePreview: isChatFilePreview }))
   },
   isChatImagePreview: {},
-  toggleIsImagePreview: record =>
-    set(state => ({ isChatImagePreview: { [record]: !state.isChatImagePreview[record] } })),
+  toggleIsImagePreview: record => set(state => ({ isChatImagePreview: { [record]: !state.isChatImagePreview[record] } })),
   messages: [],
   image: null,
   setImage(image: File | null) {

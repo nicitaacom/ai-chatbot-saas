@@ -8,6 +8,7 @@ const config: Config = {
       primary: ["Inter", "sans-serif"],
       secondary: ["Proxima Nova", "sans-serif"],
     },
+
     screens: {
       mobile: "415px",
       // => @media (min-width: 415px) { ... }

@@ -1,4 +1,4 @@
-import { TPaddings, TTheme } from "@/TS/types/TThemeAndPaddings"
+import { TPaddings, TTheme } from "@/ts/types/TThemeAndPaddings"
 import { create } from "zustand"
 import { persist, subscribeWithSelector } from "zustand/middleware"
 

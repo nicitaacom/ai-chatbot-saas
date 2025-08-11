@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 
 import { useI18n } from "@/locales/client"
-import { TAuthMode } from "@/TS/types/TAuthMode"
+import { TAuthMode } from "@/ts/types/TAuthMode"
 
 export function AuthHeader({ mode }: { mode: TAuthMode }) {
   const t = useI18n()

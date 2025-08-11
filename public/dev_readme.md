@@ -9,6 +9,9 @@ Promot for AI
 it should be in design like whatsApp notion upwrok
 follow my tailwind config and .css
 follow 60 30 10 rule
-create it in styles like bg-foreground/40 border border-border-color/20 rounded blur-sm shadow-sm
+create it in styles like bg-foreground/40 border rounded-lg border-border-color/20 blur-sm shadow-sm
 use scale 98 when user press on button
+use antd (for icons use react-icons)
+
+tailind.config.ts
 ```

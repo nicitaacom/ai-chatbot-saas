@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { nanoid } from "nanoid"
 import { useSearchParams } from "next/navigation"
 
-import { IMessageDB } from "@/TS/interfaces/IMessageDB"
+import { IMessageDB } from "@/ts/interfaces/IMessageDB"
 import { SupportButton } from "@/components/SupportButton/SupportButton"
 
 export default function EmbedClient() {

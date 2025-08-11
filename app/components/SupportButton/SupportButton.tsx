@@ -2,7 +2,7 @@
 
 import { RefObject, useRef } from "react"
 import useOnEscOrClickOutside from "@/hooks/useOnEscOrClickOutside"
-import { IMessageDB } from "@/TS/interfaces/IMessageDB"
+import { IMessageDB } from "@/ts/interfaces/IMessageDB"
 import { useSupportDropdown } from "./hooks/useSupportDropdown"
 import { useMessagesStore } from "./hooks/useMessages"
 import { DropdownContainer } from "./components/DropdownContainer"

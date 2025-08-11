@@ -17,8 +17,10 @@ export default function RootLayout({ params: { locale }, children }: { params: {
     <html lang="en" className="dark">
       <body className={inter.className}>
         <I18nProviderClient locale={locale}>
-          <Navbar />
-          {children}
+          <div className="relative w-full h-[calc(100%-32px)] flex flex-col">
+            <Navbar />
+            {children}
+          </div>
         </I18nProviderClient>
       </body>
     </html>

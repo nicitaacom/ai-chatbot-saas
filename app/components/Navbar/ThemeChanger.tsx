@@ -7,7 +7,7 @@ import { FaCheck } from "react-icons/fa"
 
 import useOnEscOrClickOutside from "@/hooks/useOnEscOrClickOutside"
 import useThemeStore from "@/stores/useThemeStore"
-import { TTheme } from "@/TS/types/TThemeAndPaddings"
+import { TTheme } from "@/ts/types/TThemeAndPaddings"
 
 export function ThemeChanger() {
   const { theme, setTheme } = useThemeStore()
@@ -64,7 +64,7 @@ export function ThemeChanger() {
           visibility: isDropdown ? "visible" : "hidden",
         }}
         transition={{ duration: 0.25 }}
-        className="absolute right-0 mt-2 w-40 bg-white dark:bg-neutral-900 border border-gray-200/30 rounded-xl shadow-md z-50 py-1">
+        className="absolute right-0 mt-2 w-40 bg-white dark:bg-neutral-900 border border-gray-200/30 rounded-lg shadow-md z-50 py-1">
         {colors.map(c => (
           <motion.button
             key={c.name}

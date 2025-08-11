@@ -1,12 +1,14 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { useChangeLocale, useCurrentLocale } from "@/locales/client"
-import { FaCheck, FaGlobe } from "react-icons/fa"
 import { IoMdArrowDropdown } from "react-icons/io"
+import { FaCheck, FaGlobe } from "react-icons/fa"
+import Link from "next/link"
 import { motion } from "framer-motion"
+
+import { useChangeLocale, useCurrentLocale } from "@/locales/client"
 import useThemeStore from "@/stores/useThemeStore"
-import { TLocaleTag } from "@/TS/types/TLocale"
+import { TLocaleTag } from "@/ts/types/TLocale"
 import useOnEscOrClickOutside from "@/hooks/useOnEscOrClickOutside"
 import { ThemeChanger } from "./ThemeChanger"
 
@@ -17,6 +19,7 @@ const locales = [
 
 export const Navbar = () => {
   const [langOpen, setLangOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false) // mock state
   const langRef = useRef<HTMLDivElement>(null)
 
   const changeLocale = useChangeLocale()
@@ -37,8 +40,12 @@ export const Navbar = () => {
     setLangOpen(false)
   }
 
+  const handleLogout = () => {} // empty for now
+
   return (
-    <nav className="relative z-50 px-6 py-3 mt-4 mx-4 rounded-xl border border-gray-200/20 bg-white/40 dark:bg-black/40 backdrop-blur-md shadow-sm">
+    <nav
+      className="relative z-50 rounded-lg border border-gray-200/20 bg-white/40 dark:bg-black/40 backdrop-blur-md shadow-sm
+    px-6 py-3 mx-4 mt-4">
       <div className="flex justify-between items-center max-w-7xl mx-auto">
         {/* Logo */}
         <div className="flex items-center space-x-3">
@@ -49,6 +56,24 @@ export const Navbar = () => {
         </div>
 
         <div className="flex items-center space-x-4">
+          {/* Auth Link */}
+          {isLoggedIn ? (
+            <motion.button
+              onClick={handleLogout}
+              whileTap={{ scale: 0.98 }}
+              className="text-sm font-medium hover:text-info/80 transition-colors">
+              Logout
+            </motion.button>
+          ) : (
+            <Link href="/auth">
+              <motion.span
+                whileTap={{ scale: 0.98 }}
+                className="text-sm font-medium hover:text-info/80 transition-colors cursor-pointer">
+                Login
+              </motion.span>
+            </Link>
+          )}
+
           {/* Theme Dropdown */}
           <ThemeChanger />
 
@@ -73,7 +98,7 @@ export const Navbar = () => {
                 visibility: langOpen ? "visible" : "hidden",
               }}
               transition={{ duration: 0.25 }}
-              className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 border border-gray-200/30 rounded-xl shadow-md z-50 py-1">
+              className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 border border-gray-200/30 rounded-lg shadow-md z-50 py-1">
               {locales.map(l => (
                 <motion.button
                   key={l.code}
