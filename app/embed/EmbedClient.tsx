@@ -4,12 +4,12 @@ import { useEffect, useState } from "react"
 import { nanoid } from "nanoid"
 import { useSearchParams } from "next/navigation"
 
-import { IMessageDB } from "@/ts/interfaces/IMessageDB"
+import { ISupportMessageDB } from "@/features/auth/sub/support/interfaces/ISupportMessageDB"
 import { SupportButton } from "@/components/SupportButton/SupportButton"
 
 export default function EmbedClient() {
   const widgetId = useSearchParams().get("widgetId")
-  const [initialMessages, setInitialMessages] = useState<IMessageDB[]>([])
+  const [initialMessages, setInitialMessages] = useState<ISupportMessageDB[]>([])
   const [openAIKey, setOpenAIKey] = useState("")
   const [userId, setUserId] = useState("")
 

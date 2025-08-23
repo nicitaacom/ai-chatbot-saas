@@ -2,21 +2,21 @@
 
 import { RefObject, useRef } from "react"
 import useOnEscOrClickOutside from "@/hooks/useOnEscOrClickOutside"
-import { IMessageDB } from "@/ts/interfaces/IMessageDB"
+import { ISupportMessageDB } from "@/features/auth/sub/support/interfaces/ISupportMessageDB"
 import { useSupportDropdown } from "./hooks/useSupportDropdown"
-import { useMessagesStore } from "./hooks/useMessages"
+import { useSupportButtonMessages } from "./hooks/useSupportButtonMessages"
 import { DropdownContainer } from "./components/DropdownContainer"
 
 interface SupportButton {
   openAIKey: string
   userId: string
-  initialMessages: IMessageDB[]
+  initialMessages: ISupportMessageDB[]
 }
 
 export function SupportButton({ openAIKey, userId, initialMessages }: SupportButton) {
   const supportDropdownRef = useRef<HTMLDivElement>(null)
 
-  const { isChatFilePreview, isChatImagePreview } = useMessagesStore()
+  const { isChatFilePreview, isChatImagePreview } = useSupportButtonMessages()
   const { closeDropdown } = useSupportDropdown()
 
   useOnEscOrClickOutside(supportDropdownRef, closeDropdown, !isChatFilePreview && !Object.values(isChatImagePreview)[0])

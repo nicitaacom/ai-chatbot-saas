@@ -8,7 +8,7 @@ import { motion } from "framer-motion"
 
 import { useChangeLocale, useCurrentLocale } from "@/locales/client"
 import useThemeStore from "@/stores/useThemeStore"
-import { TLocaleTag } from "@/ts/types/TLocale"
+import { TLocaleTag } from "@/ts/types/TLocaleTag"
 import useOnEscOrClickOutside from "@/hooks/useOnEscOrClickOutside"
 import { ThemeChanger } from "./ThemeChanger"
 

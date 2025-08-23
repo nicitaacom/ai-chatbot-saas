@@ -2,7 +2,7 @@
 
 import { ReactNode } from "react"
 import { I18nProviderClient } from "@/locales/client"
-import { TLocaleTag } from "@/ts/types/TLocale"
+import { TLocaleTag } from "@/ts/types/TLocaleTag"
 
 export default function SubLayout({ params, children }: { params: { locale: string }; children: ReactNode }) {
   const locale = params.locale as TLocaleTag

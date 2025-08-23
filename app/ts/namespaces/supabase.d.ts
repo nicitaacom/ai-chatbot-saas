@@ -1,25 +1,25 @@
-import { User as SupabaseUser } from "@supabase/auth-helpers-nextjs"
+import { Session as SupabaseSession } from "@supabase/auth-helpers-nextjs"
 
-export interface CustomUserMetadata {
-  iss: string // Issuer
-  sub: string // Subject ID
-  name: string // User's full name (as on google)
-  email: string // User's email
-  picture: string // URL to the user's profile picture
-  provider: string[] // Array of providers (e.g., Google)
-  full_name: string // User's full name
-  provider_id: string // Provider specific ID
-  is_email_verified: boolean // Whether the email is verified
-  is_phone_verified: boolean // Whether the phone number is verified
-  avatar_url: string // URL for the user's avatar
-  username: string // Username of the user (for support)
-  isOTPEnabled: boolean // google authenticator
-  otpEncryptedSecret: string
+export interface IDBUser {
+  id: string
+  created_at: string // ISO string (timestamptz)
+  username: string
+  email: string
+  avatar_url?: string | null
+  roles: string[]
+  email_verified_at?: string | null // ISO string (timestamptz)
+  phone_verified_at?: string | null // ISO string (timestamptz)
+  providers: string[]
+  encrypted_password: string
+  phone?: string | null
+  is_otp_enabled: boolean // google authenticator
+  otp_encrypted_secret?: string | null
 }
 
 // Extend SupabaseUser
-export interface User extends SupabaseUser {
-  user_metadata: CustomUserMetadata
+export interface User {
+  user: IDBUser
+  session: SupabaseSession
 }
 
 // This makes sure TypeScript treats this file as a module

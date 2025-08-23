@@ -21,7 +21,7 @@ export default function ClientPage() {
       <>
         <p>Current locale: {locale}</p>
         <button onClick={() => changeLocale("en")}>English</button>
-        <button onClick={() => changeLocale("lt")}>Latvian</button>
+        <button onClick={() => changeLocale("lv")}>Latvian</button>
       </>
     </div>
   )

@@ -89,7 +89,6 @@ export default {
   "plan.feature.checkout.10x": "10x faster checkout",
   "plan.feature.checkout.40x": "40x faster checkout",
 
-  // Auth
   "auth.login.title": "Holla,\nWelcome Back",
   "auth.login.subtitle": "Hey, welcome back to your special place",
   "auth.register.title": "Hey there,\nCreate Account",
@@ -97,13 +96,53 @@ export default {
   "auth.recovery.title": "Forgot Password?",
   "auth.recovery.subtitle": "Enter your email to reset your password",
 
+  // Password Strength Levels
+  "auth.password.strength": "Password Strength",
+  "auth.password.strength.weak": "Weak",
+  "auth.password.strength.fair": "Fair",
+  "auth.password.strength.good": "Good",
+  "auth.password.strength.strong": "Strong",
+
+  // Password Validation Messages
+  "auth.password.validation.required": "Password is required",
+  "auth.password.validation.min_length": "Password must be at least 15 characters long",
+  "auth.password.validation.max_length": "Password must not exceed 128 characters (DoS protection)",
+  "auth.password.validation.prohibited_chars": "Password contains prohibited control characters",
+  "auth.password.validation.null_bytes": "Password contains null bytes which are not allowed",
+  "auth.password.validation.common_password": "This password is in the list of commonly used passwords and is easily guessable",
+  "auth.password.validation.keyboard_patterns": "Password contains keyboard patterns which are easily guessable",
+  "auth.password.validation.repeating_chars": "Password contains too many repeating characters",
+  "auth.password.validation.sequential_chars": "Password contains sequential characters which are easily guessable",
+  "auth.password.validation.leet_speak": "Password is a common password with simple character substitutions",
+  "auth.password.validation.breached_password": "This password has appeared in a data breach and is not safe to use",
+  "auth.password.validation.personal_info": "Password contains personal information and is easily guessable",
+  "auth.password.validation.too_weak": "Password is too weak. Please choose a stronger password.",
+  "auth.password.validation.too_fair": "Password is too fair. Please choose a stronger password.",
+
+  // Email Validation Messages
+  "auth.email.validation.required": "Email is required",
+  "auth.email.validation.too_long": "Email is too long (max 254 characters)",
+  "auth.email.validation.invalid_format": "Email must follow basic email format (e.g. email@example.com)",
+  "auth.email.validation.domain_missing": "Domain part must exist (e.g. email@domain.com)",
+  "auth.email.validation.email_part_missing": "Email part must exist (e.g. email@domain.com)",
+  "auth.email.validation.email_part_double_dot": "Email part should not contain consecutive dots (..)",
+  "auth.email.validation.domain_part_double_dot": "Domain part should not contain consecutive dots (..)",
+  "auth.email.validation.domain_part_dot": "Domain part must not start or end with a dot (.)",
+  "auth.email.validation.email_part_dot": "Email part must not start or end with a dot (.)",
+  "auth.email.validation.multiple_at": "Email must contain exactly one @ symbol",
+  "auth.email.validation.invalid": "Invalid email format",
+
+  // Username Validation Messages
+  "auth.validation.username.required": "Username is required",
+
   // Form Fields
-  "auth.email.placeholder": "stanley@gmail.com",
+  "auth.email.placeholder": "nicitaacom@gmail.com",
   "auth.password.placeholder": "••••••••••••",
   "auth.username.placeholder": "HANTARESpeek",
   "auth.email.label": "Email",
   "auth.password.label": "Password",
   "auth.username.label": "Username",
+  "auth.email_not_allowed_with_this_domain": "Email with this domain is not allowed",
 
   // Buttons
   "auth.login.button": "Sign In",
@@ -120,10 +159,40 @@ export default {
   "auth.sign.in": "Sign In",
   "auth.or.continue": "or continue with",
 
-  // Validation
-  "auth.validation.email.required": "Email is required",
-  "auth.validation.email.invalid": "Invalid email format",
-  "auth.validation.password.required": "Password is required",
-  "auth.validation.password.min": "Password must be at least 6 characters",
-  "auth.validation.username.required": "Username is required",
+  // Auth database errors
+  "auth.database.error_finding_user": "Error finding user in DB: {message}",
+  "auth.database.user_not_registered": "User not registered",
+  "auth.database.email_not_registered_with_credentials": "This email not registered with credentials",
+  "auth.database.invalid_credentials": "Invalid credentials",
+  "auth.database.supabase_error": "Authentication error: {message}",
+  "auth.database.no_session": "No session returned from authentication service",
+  "auth.database.no_user": "No user returned from authentication service",
+
+  // Registration specific
+  "auth.register.password_mismatch": "Passwords do not match",
+  "auth.register.user_already_exists": "An account with this email already exists",
+  "auth.register.user_exists_different_provider":
+    "An account with this email exists but was created using a different method (Google, Facebook, etc.)",
+  "auth.register.password_hashing_failed": "Failed to secure password. Please try again.",
+  "auth.register.auth_user_creation_failed": "Failed to create authentication account",
+  "auth.register.email_confirmation_required": "Account created successfully! Please check your email to confirm your account.",
+  "auth.server.missing_password_secret": "Missin password secret - contact support",
+  "auth.server.missing_jwt_secret": "JWT secret missing",
+
+  // Email verification
+  "auth.verify.missing_token": "Verification token is missing",
+  "auth.verify.invalid_or_expired_token": "Verification token is invalid or expired",
+  "auth.verify.invalid_token_payload": "Verification token payload is invalid",
+  "auth.verify.user_not_found": "User not found",
+  "auth.verify.email_mismatch": "Email address does not match our records",
+  "auth.verify.already_verified": "Email is already verified",
+  "auth.verify.success": "Your email has been successfully verified",
+  "auth.database.error": "Database error: {message}",
+
+  // Password recovery
+  "auth.database.user_not_found": "No account found with this email address",
+  "auth.database.user_no_credentials_provider":
+    "This email was not registered with a password. Try signing in with Google or another method.",
+  "auth.database.reset_email_failed": "Failed to send password reset email: {message}",
+  "auth.database.reset_email_sent": "If an account with this email exists, you will receive a password reset link shortly.",
 } as const

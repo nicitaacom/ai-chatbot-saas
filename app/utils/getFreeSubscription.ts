@@ -2,10 +2,12 @@ import moment from "moment-timezone"
 import { TPlanName } from "@/ts/types/TPlanName"
 import { Subscription } from "@/ts/types_db_stripe"
 
+// TODO it's a const
 export const FREE_PLAN_PRICE_ID =
   // TODO - urgent update this price from mock data to actuall data
   process.env.NODE_ENV === "development" ? "price_1QmcfgAk7lHlbdMeFjqJe8jj" : "price_1QmcieAk7lHlbdMe9ehLrJqQ"
 
+// TODO - it's related to subscription feature
 export function getFreeSubscription(userId: string): Subscription {
   return {
     id: `sub_${userId}`,

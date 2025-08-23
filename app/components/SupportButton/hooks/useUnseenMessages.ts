@@ -1,13 +1,13 @@
 import { create } from "zustand"
 
 import getOrSetAnonymousIdFromLS from "@/utils/getAnonymousId"
-import { IMessageDB } from "@/ts/interfaces/IMessageDB"
+import { ISupportMessageDB } from "@/features/auth/sub/support/interfaces/ISupportMessageDB"
 
 type UnseenMessagesStore = {
   unseenMessagesNumber: number
   setIncreaseUnseenMessages: () => void
   setClearUnseenMessages: () => void
-  initialize: (initialMessages: IMessageDB[]) => void
+  initialize: (initialMessages: ISupportMessageDB[]) => void
 }
 
 export const useUnseenMessagesStore = create<UnseenMessagesStore>()(set => ({
@@ -25,7 +25,7 @@ export const useUnseenMessagesStore = create<UnseenMessagesStore>()(set => ({
     }))
   },
 
-  initialize(initialMessages: IMessageDB[]) {
+  initialize(initialMessages: ISupportMessageDB[]) {
     const userId = getOrSetAnonymousIdFromLS() // get userId based on authenticaed user on not
     const unseenAmount = initialMessages.filter(
       message => message.ticket_id === userId && message.seen === false && message.sender_id !== userId,
