@@ -37,30 +37,35 @@ const CACHE_DURATION = 24 * 60 * 60 * 1000 // 24 hours in milliseconds
 // Function to get cached passwords or load them if needed
 async function getCommonPasswords(): Promise<Set<string>> {
   const now = Date.now()
-
-  // Check if cache is valid (exists and not expired)
   if (commonPasswordsCache && now - cacheTimestamp < CACHE_DURATION) {
-    console.log("Using cached common passwords") // Optional: for debugging
+    console.log("Using cached common passwords") // debug
     return commonPasswordsCache
   }
 
-  // Load passwords and update cache
   try {
-    console.log("Loading common passwords from server...") // Optional: for debugging
-    if (typeof window === "undefined") {
-      const module = await import("./loadPasswordsFn")
-      commonPasswordsCache = module.loadPasswordsFn() // dynamically imported function for server
-    } else {
-      const module = await import("../class/actions/loadPasswordsAction")
-      commonPasswordsCache = await module.loadPasswordsAction() // dynamically imported function for client
-    }
+    console.log("Loading common passwords from server...") // debug
+    // 2. import correct loader depending on runtime
+    const module =
+      typeof window === "undefined" ? await import("./loadPasswordsFn") : await import("../class/actions/loadPasswordsAction")
 
+    // 3. call loader (await in case it returns a Promise)
+    const mod: any = module
+
+    // 2. call whichever export exists
+    const loader = mod.loadPasswordsFn ?? mod.loadPasswordsAction ?? mod.default ?? (() => [])
+    const data = await loader()
+
+    // 4. normalise to Set (accept Set or Array)
+    const set = data instanceof Set ? data : Array.isArray(data) ? new Set(data) : new Set<string>()
+    commonPasswordsCache = set
     cacheTimestamp = now
-    return commonPasswordsCache
+    return set
   } catch (error) {
     console.error("Failed to load common passwords:", error)
-    // Return empty set as fallback to not block validation
-    return new Set<string>()
+    // 5. ensure cache is a Set so callers can safely call .has
+    commonPasswordsCache = new Set<string>()
+    cacheTimestamp = now
+    return commonPasswordsCache
   }
 }
 
@@ -158,7 +163,6 @@ async function isPasswordBreached(password: string): Promise<boolean> {
     const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
       headers: { "User-Agent": "ai-chatbot-saas" },
     })
-    console.log(155, "response - ", response)
 
     if (!response.ok) {
       console.error("HIBP API error:", response.status)
@@ -254,8 +258,11 @@ export const validatePasswordDetailed = async (
   }
 
   // Check against common passwords using cached data
-  const commonPasswords = await getCommonPasswords() // This will use cache if available
+  let commonPasswords = await getCommonPasswords()
   const lowercasePassword = password.toLowerCase()
+  if (!commonPasswords || typeof commonPasswords.has !== "function") commonPasswords = new Set<string>()
+  if (commonPasswords.has(lowercasePassword)) errors.push(messages.commonPassword)
+
   if (commonPasswords.has(lowercasePassword)) {
     errors.push(messages.commonPassword)
   }
