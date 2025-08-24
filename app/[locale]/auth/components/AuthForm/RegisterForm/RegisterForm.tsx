@@ -3,6 +3,7 @@ import { submitFormWithCredentialsFn } from "@/features/auth/functions/submitFor
 import { SubmitFormButton } from "../components/SubmitFormButton"
 import { InputEmail } from "../components/InputEmail"
 import { InputPassword } from "../components/InputPassword"
+import { AuthModeButton } from "../components/AuthModeButton"
 
 export function RegisterForm() {
   const t = useI18n()
@@ -16,6 +17,9 @@ export function RegisterForm() {
 
       {/* Submit Button */}
       <SubmitFormButton />
+
+      {/* Sign Up Link */}
+      <AuthModeButton />
     </form>
   )
 }

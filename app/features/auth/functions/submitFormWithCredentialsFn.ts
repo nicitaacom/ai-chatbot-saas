@@ -2,7 +2,7 @@ import { TI18nFunction } from "@/ts/types/TI18nHook"
 import { Auth } from "../class/Auth"
 import { useLoading } from "@/stores/useLoading"
 import useAuth from "../stores/useAuth"
-import useError from "@/stores/useError"
+import useNotification from "@/stores/useError"
 import { rateLimit } from "@/libs/rateLimit"
 
 /**
@@ -15,11 +15,12 @@ export async function submitFormWithCredentialsFn(e: React.FormEvent, t: TI18nFu
   const { setIsLoading } = useLoading.getState()
   const { setEmailInputError, setPasswordInputError } = useAuth.getState()
   const { emailInputValue, passwordInputValue, authMode } = useAuth.getState()
-  const { setError } = useError.getState()
+  const { setNotification } = useNotification.getState()
 
   const authSDK = new Auth()
 
   try {
+    setIsLoading(true)
     e.preventDefault()
     // 0. Validate inputs
     const emailValidation = authSDK.validateEmail(emailInputValue, t)
@@ -38,14 +39,15 @@ export async function submitFormWithCredentialsFn(e: React.FormEvent, t: TI18nFu
       throw Error(passwordValidation)
     }
   } catch (error) {
-    console.log(36, "error", error)
+    console.log(42, "error", error)
     return // to don't execute second try-catch block
+  } finally {
+    setIsLoading(false)
   }
 
   // second try catch is required to don't duplicate errors for email and password with global error
   try {
     setIsLoading(true)
-
     // Clear previous errors
     setEmailInputError("")
     setPasswordInputError("")
@@ -62,10 +64,11 @@ export async function submitFormWithCredentialsFn(e: React.FormEvent, t: TI18nFu
     if (authMode === "register") {
       const loginWithCredentialsResp = await authSDK.registerWithCredentials(emailInputValue, passwordInputValue)
       if (typeof loginWithCredentialsResp === "string") throw Error(loginWithCredentialsResp)
+      else setNotification("success", loginWithCredentialsResp[0])
     }
   } catch (error) {
     console.log(58, "error in handleSubmit", error)
-    if (error instanceof Error) setError(error.message)
+    if (error instanceof Error && !error.message.includes("Account created successfully")) setNotification("error", error.message)
   } finally {
     setIsLoading(false)
   }

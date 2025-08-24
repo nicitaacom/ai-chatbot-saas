@@ -1,6 +1,6 @@
 import { submitFormWithCredentialsFn } from "@/features/auth/functions/submitFormWithCredentialsFn"
 import { SubmitFormButton } from "../components/SubmitFormButton"
-import { ForgotPassword } from "./ForgotPassword"
+import { AuthFooter } from "./AuthFooter"
 import { AuthModeButton } from "../components/AuthModeButton"
 import { InputPassword } from "../components/InputPassword"
 import { InputEmail } from "../components/InputEmail"
@@ -14,11 +14,13 @@ export function LoginForm() {
       {/* Email Input */}
       <InputEmail />
 
-      {/* Password Input */}
-      <InputPassword />
+      <div className="space-y-3">
+        {/* Password Input */}
+        <InputPassword />
 
-      {/* Remember & Forgot */}
-      <ForgotPassword />
+        {/* Remember & Forgot */}
+        <AuthFooter />
+      </div>
 
       {/* Submit Button */}
       <SubmitFormButton />

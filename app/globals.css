@@ -173,3 +173,29 @@ body {
   flex-flow: column;
   min-height: 100vh;
 }
+
+@keyframes ringExpand {
+  0% {
+    border: 1px solid hsl(var(--foreground));
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    border: 1px solid hsl(var(--brand));
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes ringContract {
+  0% {
+    border: 1px solid hsl(var(--brand));
+    transform: scale(2);
+    opacity: 0;
+  }
+  100% {
+    border: 1px solid hsl(var(--foreground));
+    transform: scale(1);
+    opacity: 1;
+  }
+}

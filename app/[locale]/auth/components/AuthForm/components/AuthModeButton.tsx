@@ -14,7 +14,7 @@ export function AuthModeButton() {
         className="text-brand hover:text-brand/80 transition-colors duration-200 font-medium"
         type="button"
         onClick={() => setAuthMode(authMode === "login" ? "register" : "login")}>
-        {t("auth.sign.up")}
+        <span className="text-brand">{t(authMode === "login" ? "auth.sign.up" : "auth.sign.in")}</span>
       </button>
     </div>
   )

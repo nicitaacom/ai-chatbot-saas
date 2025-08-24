@@ -25,6 +25,13 @@ export function getCookie(name: TCookieName) {
   }
 }
 
+export function delCookie(name: TCookieName) {
+  if (typeof document === "undefined") return
+
+  // Set expiry to the past to remove the cookie
+  document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/"
+}
+
 export function getAllCookies() {
   if (typeof document === "undefined") return {}
 

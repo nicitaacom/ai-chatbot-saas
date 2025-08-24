@@ -3,11 +3,12 @@ import { FcGoogle } from "react-icons/fc"
 import { Button } from "antd"
 
 import supabaseClient from "@/libs/supabaseClient"
-import { useCurrentLocale } from "@/locales/client"
-import useError from "@/stores/useError"
+import { useCurrentLocale, useI18n } from "@/locales/client"
+import useNotification from "@/stores/useError"
 
 export function ContinueWithGoogleButton({ className }: { className?: string }) {
-  const { setError } = useError()
+  const t = useI18n()
+  const { setNotification } = useNotification()
   const locale = useCurrentLocale()
   async function continueWith(e: React.FormEvent) {
     e.preventDefault()
@@ -19,7 +20,7 @@ export function ContinueWithGoogleButton({ className }: { className?: string }) 
       provider: "google",
       options: { redirectTo },
     })
-    if (error) setError(error.message)
+    if (error) setNotification("error", error.message)
   }
 
   return (
@@ -36,7 +37,7 @@ export function ContinueWithGoogleButton({ className }: { className?: string }) 
         ${className}
       `}>
         <FcGoogle className="text-xl" />
-        <span className="font-medium text-base">Continue with Google</span>
+        <span className="font-medium text-base">{t("auth.continue_with_google")}</span>
       </Button>
     </form>
   )

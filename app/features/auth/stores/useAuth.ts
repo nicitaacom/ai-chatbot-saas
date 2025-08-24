@@ -1,6 +1,7 @@
 import { create } from "zustand"
 import { User } from "@/ts/namespaces/supabase"
 import { TAuthMode } from "../types/TAuthMode"
+import { delCookie, setCookie } from "@/utils/helpersCSR"
 
 interface Auth {
   userId: string
@@ -21,6 +22,8 @@ interface Auth {
 
   user?: User
   setUser: (user: User) => void
+
+  logout: () => void
 }
 
 export const useAuth = create<Auth>(set => ({
@@ -40,10 +43,11 @@ export const useAuth = create<Auth>(set => ({
   authMode: "login",
   setAuthMode: authMode => set(() => ({ authMode })),
 
-  setUser(user: User) {
-    set(() => ({
-      user,
-    }))
+  setUser: (user: User) => set(() => ({ user })),
+
+  logout() {
+    delCookie("auth_token")
+    set(() => ({ userId: "", user: undefined }))
   },
 }))
 

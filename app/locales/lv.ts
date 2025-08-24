@@ -158,6 +158,7 @@ export default {
   "auth.sign.up": "Reģistrēties",
   "auth.sign.in": "Pieteikties",
   "auth.or.continue": "vai turpināt ar",
+  "auth.continue_with_google": "Turpināt ar Google",
 
   // Auth database errors
   "auth.database.error_finding_user": "Kļūda meklējot lietotāju datu bāzē: {message}",
@@ -177,8 +178,11 @@ export default {
   "auth.register.auth_user_creation_failed": "Neizdevās izveidot autentifikācijas kontu",
   "auth.register.email_confirmation_required":
     "Konts veiksmīgi izveidots! Lūdzu, pārbaudiet savu e-pastu, lai apstiprinātu kontu.",
-  "auth.server.missing_password_secret": "Trūkst paroles noslēpuma - sazinieties ar atbalstu",
-  "auth.server.missing_jwt_secret": "JWT noslēpums nav norādīts",
+  "auth.server.missing_password_secret": "Trūkst paroles noslēpuma — sazinieties ar atbalstu",
+  "auth.server.missing_jwt_secret": "Trūkst JWT noslēpuma — sazinieties ar atbalstu",
+  "auth.server.missing_support_email": "Trūkst atbalsta e-pasta — sazinieties ar atbalstu",
+  "auth.server.cannot_store_verification": "Neizdevās saglabāt autentifikāciju",
+  "auth.server.invalid_data": "Neizdevās iegūt saglabāto apstiprinājumu",
 
   // Email verification
   "auth.verify.missing_token": "Trūkst apstiprināšanas tokena",

@@ -7,6 +7,7 @@ Client flow: form filled out -> appointment booked -> team helped with AI chatbo
 
 ```
 it should be in design like whatsApp notion upwrok
+
 follow my tailwind config and .css
 follow 60 30 10 rule
 create it in styles like bg-foreground/40 border rounded-lg border-border-color/20 blur-sm shadow-sm
@@ -99,7 +100,7 @@ And don't be afraid to vioate DRY a bit - even if you create similar method in a
 1. +-:server.ts
 2. +:locales/lg.ts (lg any language tag e.g fr or ch or ru etc)
 3. +-:client.ts (import new locale)
-4. +-:middleware.ts ( locales: ["en", "lt"," "lg"] add new locale )
+4. +-:middleware.ts ( locales: ["en", "lv"," "lt"] add new locale )
 5. +-:app/locale/client/page.tsx ( add new button to select new locale )
 
 </details>

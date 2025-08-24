@@ -19,7 +19,7 @@ export interface IDBUser {
 // Extend SupabaseUser
 export interface User {
   user: IDBUser
-  session: SupabaseSession
+  session: SupabaseSession | null
 }
 
 // This makes sure TypeScript treats this file as a module

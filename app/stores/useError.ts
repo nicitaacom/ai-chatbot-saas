@@ -1,13 +1,18 @@
 import { create } from "zustand"
 
-export interface Error {
-  error?: string
-  setError: (error: string) => void
+export type TStatus = "success" | "warning" | "error" | "info"
+
+interface Notification {
+  notification?: string
+  status?: TStatus
+  setNotification: (status: TStatus, message: string) => void
 }
 
-const useError = create<Error>((set, get) => ({
-  error: "",
-  setError: error => set(() => ({ error })),
+const useNotification = create<Notification>(set => ({
+  notification: undefined,
+  status: undefined,
+
+  setNotification: (status, message) => set({ status, notification: message }),
 }))
 
-export default useError
+export default useNotification

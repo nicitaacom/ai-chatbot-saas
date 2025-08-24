@@ -5,7 +5,7 @@ import { ISupportMessageDB } from "../interfaces/ISupportMessageDB"
 import { useSupportMessages } from "../stores/useSupportMessages"
 import { Support } from "../classes/Support"
 import { useSupportTickets } from "../stores/useSupportTickets"
-import useError from "@/stores/useError"
+import useNotification from "@/stores/useError"
 import { uploadImageFn } from "./uploadImageFn"
 import { rateLimit } from "@/libs/rateLimit"
 
@@ -25,9 +25,9 @@ import { rateLimit } from "@/libs/rateLimit"
 export async function sendMessageFn(userId: string, username: string) {
   const { messages, messageBody, image, setMessages } = useSupportMessages.getState() // it's inside of this feature
   const { selectedTicket } = useSupportTickets.getState() // it's inside of this feature
-  const { error: existingError, setError } = useError.getState() // cuz it's general (not other feature)
+  const { error: existingError, setNotification } = useNotification.getState() // cuz it's general (not other feature)
 
-  if (!selectedTicket) return setError("It's no selected ticket to send message")
+  if (!selectedTicket) return setNotification("warning", "It's no selected ticket to send message")
   const supportSDK = new Support(userId)
 
   // 0. Validate message
@@ -50,11 +50,11 @@ export async function sendMessageFn(userId: string, username: string) {
 
     // 1. Check rate limit
     const rateLimitResp = await rateLimit.messageNew.limit(true)
-    if (typeof rateLimitResp === "string") return setError(rateLimitResp)
+    if (typeof rateLimitResp === "string") return setNotification("error", rateLimitResp)
 
     // 2. Upload image (if any)
     const imgUrl = await uploadImageFn({ imageFile: image, bucket: "tickets-images", folder: userId })
-    if (typeof imgUrl === "string") return setError(imgUrl)
+    if (typeof imgUrl === "string") return setNotification("error", imgUrl)
 
     // optimistically set state (with uploaded image)
     if (imgUrl) setMessages([...messages.map(msg => (msg.id === newMsgId ? { ...msg, image_url: imgUrl.publicUrl } : msg))])
@@ -75,10 +75,10 @@ export async function sendMessageFn(userId: string, username: string) {
     setMessages(messages.filter(message => message.id !== newMsgId)) // undo state (delete sent message)
 
     if (error instanceof Error) {
-      setError(error.message)
+      setNotification("error", error.message)
       if (error.cause === "insDBMsgResp") {
         const deleteDBMessageResp = await supportSDK.deleteDBMessage(newMsgId)
-        if (typeof deleteDBMessageResp === "string") setError(existingError + "\n" + deleteDBMessageResp)
+        if (typeof deleteDBMessageResp === "string") setNotification("error", existingError + "\n" + deleteDBMessageResp)
       }
     }
     console.log(81, "error sendMessageFn - ", error)

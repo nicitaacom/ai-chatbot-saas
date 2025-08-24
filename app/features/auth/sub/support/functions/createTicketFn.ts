@@ -6,7 +6,7 @@ import { Support } from "../classes/Support"
 import { useLoading } from "@/stores/useLoading"
 import { useSupportMessages } from "../stores/useSupportMessages"
 import { rateLimit } from "@/libs/rateLimit"
-import useError from "@/stores/useError"
+import useNotification from "@/stores/useError"
 import { sendMessageFn } from "./sendMessageFn"
 import { useSupportTickets } from "../stores/useSupportTickets"
 
@@ -21,7 +21,7 @@ export async function createTicketFn(isCloudflareVerified: boolean, user: User, 
   const { setIsLoading } = useLoading.getState() // imported here because it's generic component that can be used everywhere
   const { messageBody } = useSupportMessages.getState() // imported here because it's this.feature related
   const { setSelectedTicket } = useSupportTickets.getState() // imported here because it's this.feature related
-  const { setError } = useError.getState()
+  const { setNotification } = useNotification.getState()
   const supportSDK = new Support(user.id) // imported here because it's support feature related
 
   try {
@@ -63,6 +63,6 @@ export async function createTicketFn(isCloudflareVerified: boolean, user: User, 
     router.push(`/support/${user.id}/${created_ticket_id}`) // this is exclution for rule DO NOT use router.push
   } catch (error) {
     console.log(43, "error in createTicketFn:", error)
-    if (error instanceof Error) setError(error.message)
+    if (error instanceof Error) setNotification("error", error.message)
   }
 }

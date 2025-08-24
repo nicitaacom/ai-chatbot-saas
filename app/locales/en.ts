@@ -158,6 +158,7 @@ export default {
   "auth.sign.up": "Sign Up",
   "auth.sign.in": "Sign In",
   "auth.or.continue": "or continue with",
+  "auth.continue_with_google": "Continue with Google",
 
   // Auth database errors
   "auth.database.error_finding_user": "Error finding user in DB: {message}",
@@ -177,7 +178,10 @@ export default {
   "auth.register.auth_user_creation_failed": "Failed to create authentication account",
   "auth.register.email_confirmation_required": "Account created successfully! Please check your email to confirm your account.",
   "auth.server.missing_password_secret": "Missin password secret - contact support",
-  "auth.server.missing_jwt_secret": "JWT secret missing",
+  "auth.server.missing_jwt_secret": "JWT secret missing - contact support",
+  "auth.server.missing_support_email": "Missing support email - contact support",
+  "auth.server.cannot_store_verification": "Failed when storing authentication",
+  "auth.server.invalid_data": "Failed when getting stored verification",
 
   // Email verification
   "auth.verify.missing_token": "Verification token is missing",

@@ -18,10 +18,9 @@ export class Auth {
     const loginWithCredentialsResp = await loginWithCredentialsAction(email, password)
     return loginWithCredentialsResp
   }
-  async registerWithCredentials(email: string, password: string): Promise<[string] | User | string> {
+  async registerWithCredentials(email: string, password: string): Promise<[string] | string> {
     const registerWithCredentialsResp = await registerWithCredentialsAction(email, password)
-    if (isArray(registerWithCredentialsResp)) return registerWithCredentialsResp[0]
-    else return registerWithCredentialsResp
+    return registerWithCredentialsResp
   }
   async recoverCredentials(email: string): Promise<string | boolean> {
     const registerWithCredentialsResp = await recoverCredentialsAction(email)
@@ -41,4 +40,5 @@ export class Auth {
     const passwordValidation = await validatePassword(passwordInputValue, userInputs, i18n)
     return passwordValidation
   }
+  logout() {}
 }

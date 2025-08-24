@@ -5,8 +5,10 @@ import { RegisterForm } from "./RegisterForm/RegisterForm"
 import { RecoveryForm } from "./RecoveryForm/RecoveryForm"
 import { ContinueWithGoogleButton } from "./ContinueWith/ContinueWithButton"
 import { AuthHeader } from "../AuthHeader"
+import { useI18n } from "@/locales/client"
 
 export function AuthForm() {
+  const t = useI18n()
   const { authMode } = useAuth()
 
   return (
@@ -15,7 +17,7 @@ export function AuthForm() {
       <FormContent authMode={authMode} />
       <div className="flex items-center gap-3">
         <div className="flex-1 h-px bg-border-color" />
-        <span className="pb-0.5">continue with</span>
+        <span className="pb-0.5">{t("auth.or.continue")}</span>
         <div className="flex-1 h-px bg-border-color" />
       </div>
       {/* Continue button */}
