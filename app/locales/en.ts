@@ -91,6 +91,7 @@ export default {
 
   "auth.login.title": "Holla,\nWelcome Back",
   "auth.login.subtitle": "Hey, welcome back to your special place",
+  "auth.login.validating_password_security": "Validating password security...",
   "auth.register.title": "Hey there,\nCreate Account",
   "auth.register.subtitle": "Join us and start your journey today",
   "auth.recovery.title": "Forgot Password?",
@@ -159,6 +160,10 @@ export default {
   "auth.sign.in": "Sign In",
   "auth.or.continue": "or continue with",
   "auth.continue_with_google": "Continue with Google",
+  "auth.resending": "resending",
+  "auth.resent": "resent",
+  "auth.resend_failed": "failed to resend email: {message}",
+  "auth.resend": "resend",
 
   // Auth database errors
   "auth.database.error_finding_user": "Error finding user in DB: {message}",
@@ -177,11 +182,15 @@ export default {
   "auth.register.password_hashing_failed": "Failed to secure password. Please try again.",
   "auth.register.auth_user_creation_failed": "Failed to create authentication account",
   "auth.register.email_confirmation_required": "Account created successfully! Please check your email to confirm your account.",
+  "auth.register.user_exist_email_not_confirmed":"User registered but email not confirmed",
   "auth.server.missing_password_secret": "Missin password secret - contact support",
   "auth.server.missing_jwt_secret": "JWT secret missing - contact support",
   "auth.server.missing_support_email": "Missing support email - contact support",
   "auth.server.cannot_store_verification": "Failed when storing authentication",
+  "auth.server.error_encrypting_password": "Error encrypting password",
   "auth.server.invalid_data": "Failed when getting stored verification",
+  "auth.register.resend_rate_limited": "Email already has been sent. Please try again in {seconds} seconds.",
+  "auth.register.insert_new_user_failed": "Failed to create a record in database for a new user: {message}",
 
   // Email verification
   "auth.verify.missing_token": "Verification token is missing",

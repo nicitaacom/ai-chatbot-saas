@@ -1,6 +1,7 @@
 import supabaseAdmin from "@/libs/supabaseAdmin"
-import { User } from "@/ts/namespaces/supabase"
+import { IDBUser } from "@/ts/namespaces/supabase"
 import { TProviders } from "@/ts/types/TProviders"
+import { User } from "@supabase/supabase-js"
 
 /**
  *

@@ -1,225 +1,197 @@
 // app/api/auth/verify/route.ts
-/**
- * Email verification endpoint
- *
- * Flow:
- * 1. rate-limit (10/day per IP)
- * 2. verify short JWT -> get redis id
- * 3. fetch plaintext {email,password} from Redis (delete on error)
- * 4. re-check DB: if providers include "credentials" -> conflict (someone already registered)
- * 5. hash password with pepper + argon2 and insert/update users table (set email_verified_at)
- * 6. delete Redis verification record
- * 7. sign app-level auth_token (constructedUser shape) and set cookie
- * 8. redirect to frontend success page or return JSON
- *
- * NOTE: This route does NOT create a Supabase Auth user; it only manages your `users` table and app JWT.
- * If later you prefer Supabase Auth, we can switch to admin.createUser or signUp flow.
- */
-
-import { Ratelimit } from "@upstash/ratelimit"
-import { Redis } from "@upstash/redis"
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
-import jwt, { JwtPayload } from "jsonwebtoken"
-import argon2 from "argon2"
-
-import supabaseAdmin from "@/libs/supabaseAdmin"
-import { getI18n } from "@/locales/server"
 import type { NextRequest } from "next/server"
-import type { IDBUser, User as ConstructedUser } from "@/ts/namespaces/supabase"
-import { setCookie } from "@/utils/helpersSSR"
+import { TLocaleTag } from "@/ts/types/TLocaleTag"
+import { applyRateLimit } from "./functions/applyRateLimit"
+import { verifyTokenGetId } from "./functions/verifyTokenGetId"
+import { fetchVerifyRecord } from "./functions/fetchVerifyRecord"
+import { decryptStoredPassword } from "./functions/decryptStoredPassword"
+import { fetchExistingUser } from "./functions/fetchExistingUser"
+import { deleteRedisKey } from "./functions/deleteRedisKey"
+import { insertInUsers } from "./functions/insertInUsers"
+import { signAndSetAuthCookie } from "./functions/signAndSetAuthCookie"
 
-type VerifyTokenPayload = JwtPayload & { id?: string; type?: string }
-type RLResp = { ok: boolean; reset?: number; remaining?: number; reason?: string }
+/**
+ * /api/auth/verify route
+ * - server-only: wrapped in `if (typeof window === "undefined") { ... }`
+ * - uses small step functions from ./functions.ts (each returns [result] or string)
+ *
+ * Flow:
+ * // 1. rate limit
+ * // 2. verify token -> id
+ * // 3. fetch verify:{id} record
+ * // 4. decrypt password
+ * // 5. re-check DB
+ * // 6. insert/update users row
+ * // 7. cleanup redis
+ * // 8. sign + set cookie
+ * // 9. return success redirect or json
+ */
 
-const RATE_LIMIT_KEY = "email:verify"
-const RATE_LIMIT = 10
-const RATE_LIMIT_WINDOW = "1d" // per-day
-
-const redis = Redis.fromEnv()
-
-async function applyRateLimit(ip: string, key = RATE_LIMIT_KEY, limit = RATE_LIMIT, window = RATE_LIMIT_WINDOW): Promise<RLResp> {
-  if (typeof window !== "undefined") return { ok: false, reason: "server-only" }
+// --- translations (en|lv) + locale resolver (same as your preference) ---
+const translations: Record<TLocaleTag, Record<string, string>> = {
+  en: {
+    "auth.server.missing_jwt_secret": "JWT secret missing - contact support",
+    "auth.verify.missing_token": "Missing verification token",
+    "auth.verify.invalid_or_expired_token": "Invalid or expired token - register one more time",
+    "auth.verify.invalid_token_payload": "Invalid token payload",
+    "auth.server.invalid_data": "Failed when getting stored verification",
+    "auth.database.error_finding_user": "Error finding user in DB: {message}",
+    "auth.verify.user_not_found": "User not found",
+    "auth.verify.email_mismatch": "Token email does not match user email",
+    "auth.register.user_already_exists": "An account with this email already exists",
+    "auth.verify.already_verified": "Email already verified",
+    "auth.verify.success": "Email verified successfully",
+    "auth.server.error_decrypting_password": "Error decrypting password",
+    "auth.server.rate_limit_reason": "Too many requests, please try later",
+  },
+  lv: {
+    "auth.server.missing_jwt_secret": "Trūkst JWT noslēpuma — sazinieties ar atbalstu",
+    "auth.verify.missing_token": "Trūkst apstiprinājuma tokena",
+    "auth.verify.invalid_or_expired_token": "Nederīgs vai beidzies derīguma termiņš — reģistrējieties vēlreiz",
+    "auth.verify.invalid_token_payload": "Nederīgs tokena saturs",
+    "auth.server.invalid_data": "Neizdevās iegūt saglabāto apstiprinājumu",
+    "auth.database.error_finding_user": "Kļūda meklējot lietotāju datu bāzē: {message}",
+    "auth.verify.user_not_found": "Lietotājs nav atrasts",
+    "auth.verify.email_mismatch": "Tokenā norādītais e-pasts neatbilst lietotāja e-pastam",
+    "auth.register.user_already_exists": "Konts ar šo e-pastu jau pastāv",
+    "auth.verify.already_verified": "E-pasts jau apstiprināts",
+    "auth.verify.success": "E-pasts veiksmīgi apstiprināts",
+    "auth.server.error_decrypting_password": "Kļūda atšifrējot paroli",
+    "auth.server.rate_limit_reason": "Pārāk daudz pieprasījumu, mēģiniet vēlāk",
+  },
+}
+type Keys = keyof (typeof translations)["en"]
+function resolveLocale(req: NextRequest): TLocaleTag {
   try {
-    const limiter = new Ratelimit({ redis: Redis.fromEnv(), limiter: Ratelimit.slidingWindow(limit, window) })
-    const { success, reset, remaining } = await limiter.limit(`${ip}-${key}`)
-    return { ok: success, reset, remaining }
-  } catch (err) {
-    console.error("ratelimit error:", err)
-    return { ok: false, reason: "ratelimit-failed" }
+    const url = new URL(req.url)
+    const q = (url.searchParams.get("lng") ?? url.searchParams.get("lngTag"))?.toLowerCase()
+    if (q === "lv" || q === "en") return q as TLocaleTag
+    const seg = url.pathname.split("/").filter(Boolean)[0]
+    if (seg === "lv" || seg === "en") return seg as TLocaleTag
+    const al = req.headers.get("accept-language") ?? ""
+    if (al.startsWith("lv")) return "lv"
+  } catch {}
+  return "en"
+}
+function getT(locale: TLocaleTag) {
+  const map = translations[locale] ?? translations.en
+  return (key: Keys, vars?: Record<string, string>) => {
+    let s = (map as any)[key] ?? key
+    if (vars) for (const k of Object.keys(vars)) s = s.replace(new RegExp(`{${k}}`, "g"), vars[k])
+    return s
   }
 }
 
 export async function GET(req: NextRequest) {
-  const t = await getI18n()
+  // server-only guard
+  if (typeof window !== "undefined")
+    return NextResponse.json(
+      { ok: false, message: "This is API route that allowed to be executed on server only" },
+      { status: 400 },
+    )
+
+  // 0. locale + t()
+  const locale = resolveLocale(req),
+    t = getT(locale)
+
+  // 1. env + headers
   const jwtSecret = process.env.JWT_SECRET
   if (!jwtSecret) return NextResponse.json({ message: t("auth.server.missing_jwt_secret") }, { status: 500 })
 
   const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000").replace(/\/$/, "")
   const acceptHeader = headers().get("accept") ?? ""
+  const preferHtml = acceptHeader.includes("text/html")
   const ip = headers().get("x-real-ip") || headers().get("x-forwarded-for") || "127.0.0.1"
 
-  // 1. rate-limit
-  const rl = await applyRateLimit(ip)
-  if (!rl.ok) {
-    const now = Date.now()
-    const retryAfter = rl.reset ? Math.max(0, Math.floor((rl.reset - now) / 1000)) : 60
-    return new NextResponse(`Please try again in ${retryAfter} seconds`, {
-      status: 429,
-      headers: { "retry-after": `${retryAfter}` },
-    })
+  // helpers
+  const unwrapErr = (s: string) => (s.includes("::") ? s.split("::")[1] : s)
+  const redirectAuthErr = (err: string) => NextResponse.redirect(`${baseUrl}/auth?error=${encodeURIComponent(err)}`)
+  const redirectDashSuccess = (msg: string) => NextResponse.redirect(`${baseUrl}/dashboard?success=${encodeURIComponent(msg)}`)
+
+  // 2. rate-limit (condensed)
+  const rlRes = await applyRateLimit(ip)
+  if (!rlRes.ok) {
+    const reason = rlRes.reason ?? "rate_limited",
+      retryAfterSec = typeof rlRes.reset === "number" ? Math.max(0, Math.floor((rlRes.reset - Date.now()) / 1000)) : undefined
+    const err = rlRes.reason ?? t("auth.server.rate_limit_reason")
+    return preferHtml
+      ? redirectAuthErr(err)
+      : NextResponse.json(
+          { ok: false, reason, message: t("auth.server.rate_limit_reason"), retryAfter: retryAfterSec ?? null },
+          { status: 429 },
+        )
   }
 
-  // 2. parse token
-  const url = new URL(req.url)
-  const token = url.searchParams.get("token")
-  if (!token) {
-    const body = { message: t("auth.verify.missing_token") }
-    return acceptHeader.includes("text/html")
-      ? NextResponse.redirect(`${baseUrl}/auth/verified?status=error&reason=missing_token`)
-      : NextResponse.json(body, { status: 400 })
+  // 3. parse token (condensed)
+  const url = new URL(req.url),
+    token = url.searchParams.get("token")
+  if (!token)
+    return preferHtml
+      ? redirectAuthErr(t("auth.verify.missing_token"))
+      : NextResponse.json({ message: t("auth.verify.missing_token") }, { status: 400 })
+
+  // 4. verify token -> id
+  const idRes = await verifyTokenGetId(token, jwtSecret)
+  if (typeof idRes === "string")
+    return preferHtml
+      ? redirectAuthErr(t(idRes as any))
+      : NextResponse.json({ message: t(idRes as any) }, { status: idRes === "auth.verify.invalid_or_expired_token" ? 401 : 400 })
+  const [id] = idRes
+
+  // 5. fetch verify:{id}
+  const recRes = await fetchVerifyRecord(id)
+  if (typeof recRes === "string")
+    return preferHtml
+      ? redirectAuthErr(t(recRes as any))
+      : NextResponse.json(
+          { message: t(recRes as any) },
+          { status: recRes === "auth.verify.invalid_or_expired_token" ? 401 : 500 },
+        )
+  const [{ email, encryptedPassword }] = recRes
+
+  // 6. decrypt password (use directly later)
+  const pwdRes = await decryptStoredPassword(encryptedPassword)
+  if (typeof pwdRes === "string")
+    return preferHtml ? redirectAuthErr(t(pwdRes as any)) : NextResponse.json({ message: t(pwdRes as any) }, { status: 500 })
+
+  // 7. fetch existing user
+  const existingRes = await fetchExistingUser(email)
+  if (typeof existingRes === "string") {
+    const msg = existingRes.startsWith("auth.database.error_finding_user::") ? unwrapErr(existingRes) : existingRes
+    const errMsg = t("auth.database.error_finding_user").replace("{message}", msg)
+    return preferHtml ? redirectAuthErr(errMsg) : NextResponse.json({ message: errMsg }, { status: 500 })
+  }
+  const [existingUser] = existingRes
+
+  // 8. ensure not race-created with credentials
+  if (existingUser && existingUser.providers?.includes("credentials") && existingUser.email_verified_at) {
+    await deleteRedisKey(`verify:${id}`).catch(() => void 0)
+    const msg = t("auth.register.user_already_exists")
+    return preferHtml ? redirectAuthErr(msg) : NextResponse.json({ message: msg }, { status: 409 })
   }
 
-  // 3. verify JWT type-safely
-  let decoded: string | JwtPayload
-  try {
-    decoded = jwt.verify(token, jwtSecret)
-  } catch (verifyErr: unknown) {
-    console.warn("verify error:", verifyErr)
-    const body = { message: t("auth.verify.invalid_or_expired_token") }
-    return acceptHeader.includes("text/html")
-      ? NextResponse.redirect(`${baseUrl}/auth/verified?status=error&reason=invalid_token`)
-      : NextResponse.json(body, { status: 401 })
+  // 9. create/update user (use pwdRes[0] directly)
+  const upsertRes = await insertInUsers(email, pwdRes[0], existingUser as any)
+  if (typeof upsertRes === "string") {
+    const err = unwrapErr(upsertRes)
+    return preferHtml ? redirectAuthErr(err) : NextResponse.json({ message: err }, { status: 500 })
   }
-  if (typeof decoded === "string") {
-    const body = { message: t("auth.verify.invalid_token_payload") }
-    return acceptHeader.includes("text/html")
-      ? NextResponse.redirect(`${baseUrl}/auth/verified?status=error&reason=bad_payload`)
-      : NextResponse.json(body, { status: 400 })
-  }
-  const payload = decoded as VerifyTokenPayload
-  if (payload?.type !== "email_verification" || typeof payload?.id !== "string") {
-    const body = { message: t("auth.verify.invalid_token_payload") }
-    return acceptHeader.includes("text/html")
-      ? NextResponse.redirect(`${baseUrl}/auth/verified?status=error&reason=bad_payload`)
-      : NextResponse.json(body, { status: 400 })
+  const [dbUser] = upsertRes
+
+  // 10. cleanup redis
+  await deleteRedisKey(`verify:${id}`).catch(() => void 0)
+
+  // 11. sign + set cookie
+  const tokenRes = await signAndSetAuthCookie({ user: dbUser, session: null })
+  if (typeof tokenRes === "string") {
+    const msg = t(tokenRes as any)
+    return preferHtml ? redirectAuthErr(msg) : NextResponse.json({ message: msg }, { status: 500 })
   }
 
-  // 4. fetch Redis temporary record
-  const redisKey = `verify:${payload.id}`
-  let stored: string | null = null
-  try {
-    stored = (await redis.get(redisKey)) as string | null
-  } catch (err) {
-    console.error("redis get error:", err)
-    return NextResponse.json({ message: t("auth.server.invalid_data") }, { status: 500 })
-  }
-  if (!stored) {
-    const body = { message: t("auth.verify.invalid_or_expired_token") }
-    return acceptHeader.includes("text/html")
-      ? NextResponse.redirect(`${baseUrl}/auth/verified?status=error&reason=expired`)
-      : NextResponse.json(body, { status: 401 })
-  }
-
-  // 5. parse stored plaintext payload
-  let tmp: { email: string; password: string }
-  try {
-    tmp = JSON.parse(stored) as { email: string; password: string }
-  } catch (err) {
-    console.error("bad redis payload:", err)
-    await redis.del(redisKey).catch(() => void 0)
-    return NextResponse.json({ message: t("auth.server.invalid_data") }, { status: 500 })
-  }
-  const email = tmp.email.toLowerCase().trim()
-  const password = tmp.password
-
-  // 6. re-check DB (race-safe)
-  const { data: existingUser, error: checkError } = await supabaseAdmin.from("users").select("*").eq("email", email).single()
-  if (checkError && checkError.code !== "PGRST116") {
-    console.error("db check error:", checkError)
-    await redis.del(redisKey).catch(() => void 0)
-    return NextResponse.json({ message: t("auth.database.error_finding_user", { message: checkError.message }) }, { status: 500 })
-  }
-  if (existingUser && existingUser.providers?.includes("credentials")) {
-    // someone registered between registration and verification
-    await redis.del(redisKey).catch(() => void 0)
-    const body = { message: t("auth.register.user_already_exists") }
-    return acceptHeader.includes("text/html")
-      ? NextResponse.redirect(`${baseUrl}/auth/verified?status=error&reason=user_exists`)
-      : NextResponse.json(body, { status: 409 })
-  }
-
-  // 7. hash password with pepper + create/update DB row
-  const pepper = process.env.PASSWORD_SECRET
-  if (!pepper) {
-    await redis.del(redisKey).catch(() => void 0)
-    return NextResponse.json({ message: t("auth.server.missing_password_secret") }, { status: 500 })
-  }
-
-  let dbUser: IDBUser | null = null
-  try {
-    const encrypted_password = await argon2.hash(`${pepper}:${password}`, {
-      type: argon2.argon2id,
-      memoryCost: 2 ** 16,
-      timeCost: 3,
-      parallelism: 1,
-    })
-
-    if (existingUser) {
-      // attach credentials to existing user (e.g. oauth user)
-      const updated: Partial<IDBUser> = {
-        encrypted_password,
-        providers: Array.from(new Set([...(existingUser.providers ?? []), "credentials"])),
-        email_verified_at: new Date().toISOString(),
-      }
-      const { data: updatedRow, error: updateError } = await supabaseAdmin
-        .from("users")
-        .update(updated)
-        .eq("id", existingUser.id)
-        .select()
-        .single()
-      if (updateError) throw updateError
-      dbUser = updatedRow as IDBUser
-    } else {
-      // create new users table row
-      const newRow: IDBUser = {
-        id: crypto.randomUUID(), // your own id generator - ensure uniqueness
-        email,
-        encrypted_password,
-        providers: ["credentials"],
-        email_verified_at: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-        roles: ["USER"],
-        username: "",
-        is_otp_enabled: false,
-      }
-      const { data: inserted, error: insertError } = await supabaseAdmin.from("users").insert([newRow]).select().single()
-      if (insertError) throw insertError
-      dbUser = inserted as IDBUser
-    }
-  } catch (err) {
-    console.error("create/update user error:", err)
-    await redis.del(redisKey).catch(() => void 0)
-    const message = (err as any)?.message ?? "user_create_failed"
-    return acceptHeader.includes("text/html")
-      ? NextResponse.redirect(`${baseUrl}/auth/verified?status=error&reason=create_failed`)
-      : NextResponse.json({ message: t("auth.database.error", { message }) }, { status: 500 })
-  }
-
-  // 8. cleanup Redis (used key)
-  await redis.del(redisKey).catch(() => void 0)
-
-  // 9. sign app-level JWT and set cookie so your supabaseServer() helper picks it up
-  const constructedUser: ConstructedUser = { user: dbUser as any, session: null } // session null: you manage sessions with this jwt
-  const appJwt = jwt.sign(constructedUser, process.env.JWT_SECRET!, { expiresIn: "1h" })
-  setCookie("auth_token", appJwt)
-
-  // 10. success -> redirect or json
-  const body = {
-    message: t("auth.verify.success"),
-    user: { id: dbUser!.id, email: dbUser!.email, email_verified_at: dbUser!.email_verified_at },
-  }
-  return acceptHeader.includes("text/html")
-    ? NextResponse.redirect(`${baseUrl}/auth/verified?status=success`)
-    : NextResponse.json(body, { status: 200 })
+  // 12. success -> redirect to dashboard or return json
+  const user = { id: dbUser.id, email: dbUser.email, email_verified_at: dbUser.email_verified_at }
+  const successMsg = t("auth.verify.success")
+  return preferHtml ? redirectDashSuccess(successMsg) : NextResponse.json([{ message: successMsg, user }], { status: 200 })
 }

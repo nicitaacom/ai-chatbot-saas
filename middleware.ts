@@ -45,6 +45,7 @@ function toBase64(input: string): string {
   return Buffer.from(input).toString("base64")
 }
 
+// TODO implement refresh-token because it's better for UX and security
 /**
  * Verify auth_token using jose.
  * Returns `{ userId, payload }` on success or `null` on failure.

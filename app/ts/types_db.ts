@@ -336,7 +336,7 @@ export type Database = {
           created_at: string
           email: string
           email_verified_at: string | null
-          encrypted_password: string
+          encrypted_password: string | null
           id: string
           is_otp_enabled: boolean
           otp_encrypted_secret: string | null
@@ -345,13 +345,14 @@ export type Database = {
           providers: string[]
           roles: string[]
           username: string
+          verification_email_sent_at: string | null
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
           email: string
           email_verified_at?: string | null
-          encrypted_password: string
+          encrypted_password?: string | null
           id: string
           is_otp_enabled?: boolean
           otp_encrypted_secret?: string | null
@@ -360,13 +361,14 @@ export type Database = {
           providers?: string[]
           roles?: string[]
           username: string
+          verification_email_sent_at?: string | null
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
           email?: string
           email_verified_at?: string | null
-          encrypted_password?: string
+          encrypted_password?: string | null
           id?: string
           is_otp_enabled?: boolean
           otp_encrypted_secret?: string | null
@@ -375,6 +377,7 @@ export type Database = {
           providers?: string[]
           roles?: string[]
           username?: string
+          verification_email_sent_at?: string | null
         }
         Relationships: []
       }

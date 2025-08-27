@@ -1,10 +1,12 @@
-"use client"
-
-import { ReactNode } from "react"
 import { I18nProviderClient } from "@/locales/client"
 import { TLocaleTag } from "@/ts/types/TLocaleTag"
+import AuthPage from "./page"
 
-export default function SubLayout({ params, children }: { params: { locale: string }; children: ReactNode }) {
+export default function SubLayout({ params }: { params: { locale: string } }) {
   const locale = params.locale as TLocaleTag
-  return <I18nProviderClient locale={locale}>{children}</I18nProviderClient>
+  return (
+    <I18nProviderClient locale={locale}>
+      <AuthPage />
+    </I18nProviderClient>
+  )
 }

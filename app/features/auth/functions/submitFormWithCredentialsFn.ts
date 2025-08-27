@@ -4,6 +4,7 @@ import { useLoading } from "@/stores/useLoading"
 import useAuth from "../stores/useAuth"
 import useNotification from "@/stores/useError"
 import { rateLimit } from "@/libs/rateLimit"
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 
 /**
  *
@@ -11,10 +12,14 @@ import { rateLimit } from "@/libs/rateLimit"
  * @param t - i18n (const t = useI18n())
  * This function login/register user with credentials based on authMode
  */
-export async function submitFormWithCredentialsFn(e: React.FormEvent, t: TI18nFunction): Promise<void | string> {
+export async function submitFormWithCredentialsFn(
+  e: React.FormEvent,
+  t: TI18nFunction,
+  router: AppRouterInstance,
+): Promise<void | string> {
   const { setIsLoading } = useLoading.getState()
   const { setEmailInputError, setPasswordInputError } = useAuth.getState()
-  const { emailInputValue, passwordInputValue, authMode } = useAuth.getState()
+  const { emailInputValue, passwordInputValue, authMode, isRememberMe, setUser, setUserId } = useAuth.getState()
   const { setNotification } = useNotification.getState()
 
   const authSDK = new Auth()
@@ -58,8 +63,13 @@ export async function submitFormWithCredentialsFn(e: React.FormEvent, t: TI18nFu
     if (rateLimitResp.remaining === 0) throw Error("You reached max amount of attempts. Try again later")
 
     if (authMode === "login") {
-      const loginWithCredentialsResp = await authSDK.loginWithCredentials(emailInputValue, passwordInputValue)
+      const loginWithCredentialsResp = await authSDK.loginWithCredentials(emailInputValue, passwordInputValue, isRememberMe)
       if (typeof loginWithCredentialsResp === "string") throw Error(loginWithCredentialsResp)
+      else {
+        setUser(loginWithCredentialsResp)
+        setUserId(loginWithCredentialsResp.user.id)
+        router.push("/dashboard")
+      }
     }
     if (authMode === "register") {
       const loginWithCredentialsResp = await authSDK.registerWithCredentials(emailInputValue, passwordInputValue)

@@ -4,16 +4,16 @@ import { useEffect } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 
+import { useIsUserAuthenticated } from "@/features/auth/hooks/useRedirectAuthenticatedUser"
+import useAuth from "@/features/auth/stores/useAuth"
 import useThemeStore from "@/stores/useThemeStore"
 import { ThemeChanger } from "./ThemeChanger"
-import { getCookie } from "@/utils/helpersCSR"
 import { LanguageDropdown } from "./LanguageDropdown"
-import useAuth from "@/features/auth/stores/useAuth"
 
-export const Navbar = () => {
-  const jwt = getCookie("auth_token")
-
+export const Navbar = ({ auth_token }: { auth_token: string | undefined }) => {
   const { theme, setTheme } = useThemeStore()
+
+  const { isAuthenticated } = useIsUserAuthenticated(auth_token)
 
   useEffect(() => {
     if (!theme) setTheme("dark")
@@ -36,7 +36,7 @@ export const Navbar = () => {
 
         <div className="flex items-center space-x-4">
           {/* Auth Link */}
-          {jwt ? (
+          {isAuthenticated ? (
             <motion.button
               onClick={logout}
               whileTap={{ scale: 0.98 }}

@@ -14,8 +14,8 @@ export class Auth {
   // Note: jwt is more secure then accessing all time with userId because if hacker use IP spoofing and random userId
   // then state in js can be changed (to random userId) and data acessed if userId match in DB
 
-  async loginWithCredentials(email: string, password: string): Promise<User | string> {
-    const loginWithCredentialsResp = await loginWithCredentialsAction(email, password)
+  async loginWithCredentials(email: string, password: string, isRememberMe: boolean): Promise<User | string> {
+    const loginWithCredentialsResp = await loginWithCredentialsAction(email, password, isRememberMe)
     return loginWithCredentialsResp
   }
   async registerWithCredentials(email: string, password: string): Promise<[string] | string> {
@@ -40,5 +40,4 @@ export class Auth {
     const passwordValidation = await validatePassword(passwordInputValue, userInputs, i18n)
     return passwordValidation
   }
-  logout() {}
 }

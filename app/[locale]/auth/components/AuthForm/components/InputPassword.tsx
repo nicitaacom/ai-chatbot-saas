@@ -11,7 +11,7 @@ import { useDebounce } from "@/hooks/useDebounce"
 
 export function InputPassword() {
   const t = useI18n()
-  const { passwordInputValue, setPasswordInputValue, passwordInputError, setPasswordInputError } = useAuth()
+  const { passwordInputValue, setPasswordInputValue, passwordInputError, setPasswordInputError, authMode } = useAuth()
   const [passwordStrength, setPasswordStrength] = useState<PasswordValidationResult | null>(null)
   const [isValidating, setIsValidating] = useState(false)
 
@@ -20,6 +20,8 @@ export function InputPassword() {
 
   // Validate password when debounced value changes
   useEffect(() => {
+    if (authMode === "login" || authMode === "recovery") return
+
     const validatePasswordStrength = async () => {
       if (!debouncedPassword.trim()) {
         setPasswordStrength(null)
@@ -54,7 +56,7 @@ export function InputPassword() {
       }
 
       // Show loading state when user is typing
-      if (value.trim() && value !== debouncedPassword) {
+      if (value.trim() && value !== debouncedPassword && authMode === "register") {
         setIsValidating(true)
       }
     },
@@ -171,7 +173,7 @@ export function InputPassword() {
           {isValidating && (
             <div className="flex items-center text-xs text-subTitle">
               <div className="animate-spin mr-2 h-3 w-3 border border-brand border-t-transparent rounded-full"></div>
-              <span>Validating password security...</span>
+              <span>{t("auth.login.validating_password_security")}</span>
             </div>
           )}
         </div>

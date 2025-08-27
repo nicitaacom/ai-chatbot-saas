@@ -1,7 +1,7 @@
 import { create } from "zustand"
 import { User } from "@/ts/namespaces/supabase"
 import { TAuthMode } from "../types/TAuthMode"
-import { delCookie, setCookie } from "@/utils/helpersCSR"
+import { delCookie } from "@/utils/helpersCSR"
 
 interface Auth {
   userId: string
@@ -23,6 +23,9 @@ interface Auth {
   user?: User
   setUser: (user: User) => void
 
+  isRememberMe: boolean
+  setIsRememberMe: (isRememberMe: boolean) => void
+
   logout: () => void
 }
 
@@ -43,7 +46,10 @@ export const useAuth = create<Auth>(set => ({
   authMode: "login",
   setAuthMode: authMode => set(() => ({ authMode })),
 
-  setUser: (user: User) => set(() => ({ user })),
+  setUser: (user: User) => set(() => ({ user, userId: user.user.id })),
+
+  isRememberMe: false,
+  setIsRememberMe: isRememberMe => set(() => ({ isRememberMe })),
 
   logout() {
     delCookie("auth_token")

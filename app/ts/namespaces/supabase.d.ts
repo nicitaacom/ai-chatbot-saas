@@ -10,10 +10,11 @@ export interface IDBUser {
   email_verified_at?: string | null // ISO string (timestamptz)
   phone_verified_at?: string | null // ISO string (timestamptz)
   providers: string[]
-  encrypted_password: string
+  encrypted_password?: string | null
   phone?: string | null
   is_otp_enabled: boolean // google authenticator
   otp_encrypted_secret?: string | null
+  verification_email_sent_at?: string | null
 }
 
 // Extend SupabaseUser

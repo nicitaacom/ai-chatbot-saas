@@ -13,6 +13,7 @@ follow 60 30 10 rule
 create it in styles like bg-foreground/40 border rounded-lg border-border-color/20 blur-sm shadow-sm
 use scale 98 when user press on button
 use antd (for icons use react-icons)
+and use t("some.message") for i18n
 
 tailind.config.ts
 ```
@@ -34,7 +35,8 @@ if user need to select something or interact with something e.g input to enter y
 ## TODO
 
 implement /feedback and /utm and /auth (google/reg-validate-zerobounce/OTP/lambda-10m-encryption/login&pass/twilio-verify-SMS)<br/>
-and also "Ask AI" so users can find what they want
+and also "Ask AI" so users can find what they want<br/>
+Create a post in skool and discord that SMMA owners can use this at no cost for them
 
 <br/>
 
@@ -126,10 +128,11 @@ create table public.users (
   email_verified_at timestamptz null,
   phone_verified_at timestamptz  null,
   providers text[] not null default '{}'::text[],
-  encrypted_password text not null,
+  encrypted_password text null, -- nullable because user can login with google
   phone text null,
   is_otp_enabled boolean not null default false,
   otp_encrypted_secret text null,
+  verification_email_sent_at timestamp with time zone null,
   constraint users_pkey primary key (id)
 ) TABLESPACE pg_default;
 

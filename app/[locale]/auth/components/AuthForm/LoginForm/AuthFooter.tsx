@@ -1,21 +1,19 @@
 "use client"
 
-import { useState } from "react"
 import { Checkbox } from "antd"
 import useAuth from "@/features/auth/stores/useAuth"
 import { useI18n } from "@/locales/client"
 
 export function AuthFooter() {
   const t = useI18n()
-  const { setAuthMode } = useAuth()
-  const [rememberMe, setRememberMe] = useState(false)
+  const { isRememberMe, setIsRememberMe, setAuthMode } = useAuth()
 
   const handleCheckboxChange = (e: { target: { checked: boolean } }) => {
-    setRememberMe(e.target.checked)
+    setIsRememberMe(e.target.checked)
   }
 
   const handleTextClick = () => {
-    setRememberMe(!rememberMe)
+    setIsRememberMe(!isRememberMe)
   }
 
   return (
@@ -28,7 +26,7 @@ export function AuthFooter() {
             className={`absolute top-[3px] left-[0px] w-5 h-5 rounded pointer-events-none
                         shadow-sm shadow-brand/20 backdrop-blur-sm
                         ${
-                          rememberMe
+                          isRememberMe
                             ? "animate-[ringExpand_500ms_ease-out_forwards]"
                             : "animate-[ringContract_500ms_ease-out_forwards]"
                         }
@@ -36,7 +34,7 @@ export function AuthFooter() {
           />
 
           <Checkbox
-            checked={rememberMe}
+            checked={isRememberMe}
             onChange={handleCheckboxChange}
             className="relative z-10
                        [&_.ant-checkbox-inner]:!bg-foreground/40 

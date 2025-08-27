@@ -9,10 +9,9 @@ import supabaseAdmin from "@/libs/supabaseAdmin"
 import { validateEmail } from "../../functions/validateEmail"
 import { validatePassword } from "../../functions/validatePassword"
 import { setCookie } from "@/utils/helpersSSR"
-import supabaseServer from "@/libs/supabaseServer"
 import { getCurrentLocale, getI18n } from "@/locales/server"
 
-export async function loginWithCredentialsAction(email: string, password: string) {
+export async function loginWithCredentialsAction(email: string, password: string, isRememberMe: boolean) {
   const locale = await getCurrentLocale()
   const t = await getI18n()
 
@@ -33,7 +32,8 @@ export async function loginWithCredentialsAction(email: string, password: string
   const { data: user, error } = await supabaseAdmin.from("users").select("*").eq("email", email).single()
   if (error) return t("auth.database.error_finding_user", { message: error.message })
   if (!user) return t("auth.database.user_not_registered")
-  if (!user.providers?.includes("credentials")) return t("auth.database.email_not_registered_with_credentials")
+  if (user && !user.email_verified_at && user.verification_email_sent_at) return t("auth.register.user_exist_email_not_confirmed")
+  if (!user.encrypted_password) return t("auth.database.email_not_registered_with_credentials")
 
   // 2. Pepper check
   const pepper = process.env.PASSWORD_SECRET
@@ -43,16 +43,12 @@ export async function loginWithCredentialsAction(email: string, password: string
   const valid = await argon2.verify(user.encrypted_password, `${pepper}:${password}`)
   if (!valid) return t("auth.database.invalid_credentials")
 
-  // 4. Sign in via Supabase to get session
-  const { data, error: supabase_error } = await supabaseServer().auth.signInWithPassword({ email, password })
-  if (supabase_error) return t("auth.database.supabase_error", { message: supabase_error.message })
-  if (!data.session) return t("auth.database.no_session")
-
-  const constructedUser: User = { user: user, session: data.session }
+  const constructedUser: User = { user: user, session: null }
   const token = jwt.sign(constructedUser, process.env.JWT_SECRET, { expiresIn: "1h" })
 
   // Set cookie with default 1-hour expiration (or customize as needed)
-  setCookie("auth_token", token)
+  const monthInSeconds = 60 * 60 * 24 * 30
+  setCookie("auth_token", token, isRememberMe ? monthInSeconds : 3600)
 
   return constructedUser
 }

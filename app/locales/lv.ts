@@ -91,6 +91,7 @@ export default {
 
   "auth.login.title": "Sveiks,\nLaipni lūdzam atpakaļ",
   "auth.login.subtitle": "Sveiks, laipni lūdzam atpakaļ savā īpašajā vietā",
+  "auth.login.validating_password_security": "Notiek paroles drošības pārbaude...",
   "auth.register.title": "Sveiks,\nIzveidot kontu",
   "auth.register.subtitle": "Pievienojies mums un sāc savu ceļojumu šodien",
   "auth.recovery.title": "Aizmirsi paroli?",
@@ -159,6 +160,10 @@ export default {
   "auth.sign.in": "Pieteikties",
   "auth.or.continue": "vai turpināt ar",
   "auth.continue_with_google": "Turpināt ar Google",
+  "auth.resending": "atkārtoti sūta",
+  "auth.resent": "atkārtoti nosūtīts",
+  "auth.resend_failed": "neizdevās atkārtoti nosūtīt e-pastu: {message}",
+  "auth.resend": "sūtīt atkārtoti",
 
   // Auth database errors
   "auth.database.error_finding_user": "Kļūda meklējot lietotāju datu bāzē: {message}",
@@ -176,13 +181,16 @@ export default {
     "Konts ar šo e-pastu pastāv, bet tas tika izveidots, izmantojot citu metodi (Google, Facebook utt.)",
   "auth.register.password_hashing_failed": "Neizdevās nodrošināt paroli. Lūdzu, mēģiniet vēlreiz.",
   "auth.register.auth_user_creation_failed": "Neizdevās izveidot autentifikācijas kontu",
-  "auth.register.email_confirmation_required":
-    "Konts veiksmīgi izveidots! Lūdzu, pārbaudiet savu e-pastu, lai apstiprinātu kontu.",
+  "auth.register.email_confirmation_required": "Konts veiksmīgi izveidots! Lūdzu, pārbaudiet savu e-pastu, lai apstiprinātu kontu.",
+  "auth.register.user_exist_email_not_confirmed": "Lietotājs reģistrēts, bet e-pasts nav apstiprināts",
   "auth.server.missing_password_secret": "Trūkst paroles noslēpuma — sazinieties ar atbalstu",
   "auth.server.missing_jwt_secret": "Trūkst JWT noslēpuma — sazinieties ar atbalstu",
   "auth.server.missing_support_email": "Trūkst atbalsta e-pasta — sazinieties ar atbalstu",
   "auth.server.cannot_store_verification": "Neizdevās saglabāt autentifikāciju",
+  "auth.server.error_encrypting_password": "Kļūda šifrējot paroli",
   "auth.server.invalid_data": "Neizdevās iegūt saglabāto apstiprinājumu",
+  "auth.register.resend_rate_limited": "E-pasts jau tika nosūtīts. Lūdzu, mēģiniet vēlreiz pēc {seconds} sekundēm.",
+  "auth.register.insert_new_user_failed": "Neizdevās izveidot jauna lietotāja ierakstu datu bāzē: {message}",
 
   // Email verification
   "auth.verify.missing_token": "Trūkst apstiprināšanas tokena",

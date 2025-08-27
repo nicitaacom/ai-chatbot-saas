@@ -8,7 +8,7 @@ import { Slider } from "./components/AuthForm/Slider"
 export default function AuthPage() {
   const { theme } = useThemeStore()
 
-  // Map theme to HSL values
+  // Map theme to HSL values - it's not feature related - just styles (component related)
   const getThemeHsl = (themeName: string) => {
     const hslMap: Record<string, string> = {
       dark: "0, 0%, 60%",

@@ -1,7 +1,6 @@
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 
-import { User } from "@/ts/namespaces/supabase"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 import { insertInUsersFn } from "../functions/insertInUsersFn"
 import { insertInSubscriptionsFn } from "../functions/insertInSubscriptionsFn"
@@ -41,14 +40,12 @@ export async function GET(request: Request) {
       return NextResponse.redirect(supportUrl("[AUTH]: no response.data.user"))
     }
 
-    const userData = user as User
-
     // 1. Insert in "users" table
-    const insertInUsersResp = await insertInUsersFn(userData, "credentials")
+    const insertInUsersResp = await insertInUsersFn(user, "credentials")
     if (typeof insertInUsersResp === "string") return NextResponse.redirect(supportUrl(insertInUsersResp))
 
     // 2. Insert in "subscription" table
-    const insertInSubscriptionResp = await insertInSubscriptionsFn(userData)
+    const insertInSubscriptionResp = await insertInSubscriptionsFn(user)
     if (typeof insertInSubscriptionResp === "string") return NextResponse.redirect(supportUrl(insertInSubscriptionResp))
 
     return NextResponse.redirect(origin)
