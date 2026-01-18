@@ -25,7 +25,7 @@ import { jwtVerify } from "jose"
 const I18nMiddleware = createI18nMiddleware({
   locales: ["en", "lv"],
   defaultLocale: "en",
-  urlMappingStrategy: "rewriteDefault",
+  urlMappingStrategy: "rewrite",
 })
 
 // ---------- runtime (fix for build error) ----------
